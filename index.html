@@ -11,10 +11,10 @@
         const supabaseUrl = 'https://ynznnuogfedbvxoojcdp.supabase.co'
         const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inluem5udW9nZmVkYnZ4b29qY2RwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxNTA0MTcsImV4cCI6MjA4NTcyNjQxN30._RhkU6Fg-VR0eMFDYTF-LVnLgqRDuuFOr0xhsACSczs'
 
-        const supabase = supabase.createClient(supabaseUrl, supabaseKey)
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey)
 
         async function signUp(email, password) {
-            const { error } = await supabase.auth.signUp({ email, password })
+            const { error } = await supabaseClient.auth.signUp({ email, password })
             if (error) {
                 alert(error.message)
             } else {
@@ -23,7 +23,7 @@
         }
 
         async function signIn(email, password) {
-            const { error } = await supabase.auth.signInWithPassword({
+            const { error } = await supabaseClient.auth.signInWithPassword({
                 email,
                 password
             })
@@ -31,12 +31,12 @@
         }
 
         async function logout() {
-            await supabase.auth.signOut()
+            await supabaseClient.auth.signOut()
             location.reload()
         }
 
         async function getUser() {
-            const { data: { user } } = await supabase.auth.getUser()
+            const { data: { user } } = await supabaseClient.auth.getUser()
             return user
         }
 
@@ -44,7 +44,7 @@
             const user = await getUser()
             if (!user) return alert('Faça login primeiro')
 
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from('sheets')
                 .insert({
                     user_id: user.id,
@@ -59,7 +59,7 @@
         }
 
         async function updateSheet(sheetId, trackersData) {
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from('sheets')
                 .update({ data: trackersData })
                 .eq('id', sheetId)
@@ -68,7 +68,7 @@
         }
 
         async function loadSheets() {
-            const { data, error } = await supabase
+            const { data, error } = await supabaseClient
                 .from('sheets')
                 .select('*')
                 .order('created_at', { ascending: false })
@@ -548,8 +548,8 @@
             <h2>Login</h2>
             <input type="email" id="email" placeholder="Email">
             <input type="password" id="password" placeholder="Senha">
-            <button onclick="signIn(document.getElementById('email').value, document.getElementById('password').value)">Entrar</button>
-            <button onclick="signUp(document.getElementById('email').value, document.getElementById('password').value)">Criar Conta</button>
+            <button onclick="login()">Entrar</button>
+            <button onclick="register()">Criar Conta</button>
             <p id="loginError" style="color: red; display: none;">Erro no login.</p>
         </div>
     </div>
@@ -694,13 +694,50 @@
 
         init();
 
-        function login() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            signIn(email, password).then(() => {
-                init();
+        async function register() {
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            const { error } = await supabaseClient.auth.signUp({
+                email,
+                password
             });
+
+            if (error) {
+                alert(error.message);
+            } else {
+                alert("Conta criada! Se não entrar, verifique o email.");
+            }
         }
+
+        async function login() {
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+
+            const { error } = await supabaseClient.auth.signInWithPassword({
+                email,
+                password
+            });
+
+            if (error) alert(error.message);
+        }
+
+        async function getUser() {
+            const { data } = await supabaseClient.auth.getUser();
+            return data.user;
+        }
+
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (session?.user) {
+                currentUser = session.user;
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('dashboard').classList.add('show');
+                loadFichas();
+            } else {
+                document.getElementById('loginContainer').style.display = 'flex';
+                document.getElementById('dashboard').classList.remove('show');
+            }
+        });
 
         function openPrancheta() {
             window.open('https://owetlolxd-maker.github.io/DaggerheartCards/', '_blank');
@@ -825,7 +862,7 @@
         }
 
         async function deleteFicha(id) {
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from('sheets')
                 .delete()
                 .eq('id', id);
