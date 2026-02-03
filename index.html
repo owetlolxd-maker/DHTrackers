@@ -612,6 +612,16 @@
             'Kai': 'cafe789'
         };
 
+        // Simulação de compartilhamento entre dispositivos usando localStorage global (não real, mas para demonstração)
+        // Nota: Em produção, use um backend como Firebase, Node.js, etc.
+        function getGlobalFichas() {
+            return JSON.parse(localStorage.getItem('globalFichas') || '{}');
+        }
+
+        function setGlobalFichas(globalFichas) {
+            localStorage.setItem('globalFichas', JSON.stringify(globalFichas));
+        }
+
         function login() {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
@@ -641,11 +651,11 @@
         function searchFicha() {
             const searchId = document.getElementById('searchId').value;
             if (!searchId) return;
-            // Buscar em todos os usuários (simulação de compartilhamento)
+            const globalFichas = getGlobalFichas();
             let foundFicha = null;
             let foundUser = null;
-            for (const user in users) {
-                const fichas = JSON.parse(localStorage.getItem(`fichas_${user}`) || '[]');
+            for (const user in globalFichas) {
+                const fichas = globalFichas[user] || [];
                 foundFicha = fichas.find(f => f.id == searchId);
                 if (foundFicha) {
                     foundUser = user;
@@ -661,7 +671,8 @@
         }
 
         function loadFichas() {
-            const fichas = JSON.parse(localStorage.getItem(`fichas_${currentUser}`) || '[]');
+            const globalFichas = getGlobalFichas();
+            const fichas = globalFichas[currentUser] || [];
             const list = document.getElementById('fichaList');
             list.innerHTML = '';
             fichas.forEach(ficha => {
@@ -672,7 +683,8 @@
         }
 
         function createFicha() {
-            const fichas = JSON.parse(localStorage.getItem(`fichas_${currentUser}`) || '[]');
+            const globalFichas = getGlobalFichas();
+            if (!globalFichas[currentUser]) globalFichas[currentUser] = [];
             const newId = Date.now(); // ID único baseado em timestamp
             const newFicha = {
                 id: newId,
@@ -692,13 +704,14 @@
                 skills: ['Habilidade 1'],
                 image: ''
             };
-            fichas.push(newFicha);
-            localStorage.setItem(`fichas_${currentUser}`, JSON.stringify(fichas));
+            globalFichas[currentUser].push(newFicha);
+            setGlobalFichas(globalFichas);
             loadFichas();
         }
 
         function loadFicha(id) {
-            const fichas = JSON.parse(localStorage.getItem(`fichas_${currentUser}`) || '[]');
+            const globalFichas = getGlobalFichas();
+            const fichas = globalFichas[currentUser] || [];
             const ficha = fichas.find(f => f.id === id);
             if (ficha) {
                 loadFichaById(ficha, currentUser);
@@ -758,10 +771,12 @@
         }
 
         function deleteFicha(id) {
-            const fichas = JSON.parse(localStorage.getItem(`fichas_${currentUser}`) || '[]');
-            const updatedFichas = fichas.filter(f => f.id !== id);
-            localStorage.setItem(`fichas_${currentUser}`, JSON.stringify(updatedFichas));
-            loadFichas();
+            const globalFichas = getGlobalFichas();
+            if (globalFichas[currentUser]) {
+                globalFichas[currentUser] = globalFichas[currentUser].filter(f => f.id !== id);
+                setGlobalFichas(globalFichas);
+                loadFichas();
+            }
             if (currentFichaId === id) {
                 document.getElementById('fichaContainer').style.display = 'none';
                 document.getElementById('pranchetaBtn').style.display = 'none';
@@ -771,10 +786,9 @@
 
         function saveFicha() {
             if (!currentFichaId) return;
-            // Salvar apenas se for do usuário atual (não permite editar fichas de outros usuários)
-            if (currentUser) {
-                const fichas = JSON.parse(localStorage.getItem(`fichas_${currentUser}`) || '[]');
-                const ficha = fichas.find(f => f.id === currentFichaId);
+            const globalFichas = getGlobalFichas();
+            if (globalFichas[currentUser]) {
+                const ficha = globalFichas[currentUser].find(f => f.id === currentFichaId);
                 if (ficha) {
                     ficha.pv = parseInt(document.querySelector('#pv').children.length);
                     ficha.pf = parseInt(document.querySelector('#pf').children.length);
@@ -796,7 +810,7 @@
                     const skillsItems = document.querySelectorAll('#skillsList li');
                     ficha.skills = Array.from(skillsItems).map(li => li.firstChild.textContent.trim());
                     ficha.image = document.getElementById('charImage').src;
-                    localStorage.setItem(`fichas_${currentUser}`, JSON.stringify(fichas));
+                    setGlobalFichas(globalFichas);
                 }
             }
         }
