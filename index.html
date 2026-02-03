@@ -320,6 +320,30 @@
         .prancheta-btn:hover {
             background: #1976D2;
         }
+        .search-ficha {
+            background: rgba(26, 26, 26, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            border: 1px solid #333;
+            margin-bottom: 20px;
+        }
+        .search-ficha input {
+            width: calc(100% - 120px);
+            margin-right: 10px;
+        }
+        .search-ficha button {
+            background: #FF9800;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            min-height: 44px;
+        }
+        .search-ficha button:hover {
+            background: #E68900;
+        }
         /* Responsividade para tablets e celulares */
         @media (max-width: 768px) {
             body {
@@ -375,6 +399,12 @@
                 padding: 8px;
                 font-size: 14px;
             }
+            .search-ficha {
+                padding: 15px;
+            }
+            .search-ficha input {
+                width: calc(100% - 100px);
+            }
         }
         /* Responsividade para celulares pequenos */
         @media (max-width: 480px) {
@@ -427,6 +457,13 @@
             .radar-chart canvas {
                 height: 200px !important;
             }
+            .search-ficha input {
+                width: calc(100% - 80px);
+            }
+            .search-ficha button {
+                padding: 8px;
+                font-size: 14px;
+            }
         }
     </style>
 </head>
@@ -444,6 +481,12 @@
     <div class="dashboard" id="dashboard">
         <button class="logout" onclick="logout()">Logout</button>
         <button class="prancheta-btn" id="pranchetaBtn" onclick="openPrancheta()">🃏 Prancheta de Cartas</button>
+        <div class="search-ficha">
+            <h2>Buscar Ficha por ID</h2>
+            <input type="text" id="searchId" placeholder="Digite o ID da ficha">
+            <button onclick="searchFicha()">Buscar</button>
+            <p id="searchError" style="color: red; display: none;">Ficha não encontrada.</p>
+        </div>
         <div class="ficha-list">
             <h2>Suas Fichas</h2>
             <ul id="fichaList"></ul>
@@ -595,6 +638,28 @@
             window.open('https://owetlolxd-maker.github.io/DaggerheartCards/', '_blank');
         }
 
+        function searchFicha() {
+            const searchId = document.getElementById('searchId').value;
+            if (!searchId) return;
+            // Buscar em todos os usuários (simulação de compartilhamento)
+            let foundFicha = null;
+            let foundUser = null;
+            for (const user in users) {
+                const fichas = JSON.parse(localStorage.getItem(`fichas_${user}`) || '[]');
+                foundFicha = fichas.find(f => f.id == searchId);
+                if (foundFicha) {
+                    foundUser = user;
+                    break;
+                }
+            }
+            if (foundFicha) {
+                loadFichaById(foundFicha, foundUser);
+                document.getElementById('searchError').style.display = 'none';
+            } else {
+                document.getElementById('searchError').style.display = 'block';
+            }
+        }
+
         function loadFichas() {
             const fichas = JSON.parse(localStorage.getItem(`fichas_${currentUser}`) || '[]');
             const list = document.getElementById('fichaList');
@@ -636,56 +701,60 @@
             const fichas = JSON.parse(localStorage.getItem(`fichas_${currentUser}`) || '[]');
             const ficha = fichas.find(f => f.id === id);
             if (ficha) {
-                currentFichaId = id;
-                // Carregar dados na ficha
-                setTracker('pv', ficha.pv, '❤️');
-                setTracker('pf', ficha.pf, '⚡');
-                setTracker('hope', ficha.hope, '✨');
-                setTracker('slots', ficha.slots, '🛡️');
-                setTracker('proficiency', ficha.proficiency, '⭐');
-                setTracker('punhados', ficha.punhados, '🪙');
-                setTracker('bolsas', ficha.bolsas, '💰');
-                setTracker('cofres', ficha.cofres, '🏦');
-                document.querySelector('.section:nth-child(4) input').value = ficha.armor;
-                const attrInputs = document.querySelectorAll('.attr input');
-                ficha.attributes.forEach((val, i) => attrInputs[i].value = val);
-                const ticks = document.querySelectorAll('.tick');
-                ficha.ticks.forEach((active, i) => {
-                    if (active) ticks[i].classList.add('active');
-                    else ticks[i].classList.remove('active');
-                });
-                updateRadar();
-                const notesDiv = document.getElementById('notes');
-                notesDiv.innerHTML = '';
-                ficha.notes.forEach(note => {
-                    const noteDiv = document.createElement('div');
-                    noteDiv.className = 'note';
-                    noteDiv.innerHTML = `<textarea onchange="saveFicha();">${note}</textarea><i class="fas fa-times delete" onclick="deleteNote(this); saveFicha();"></i>`;
-                    notesDiv.appendChild(noteDiv);
-                });
-                const inventoryList = document.getElementById('inventoryList');
-                inventoryList.innerHTML = '';
-                ficha.inventory.forEach(item => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `${item} <input type="text" placeholder="Descrição" onchange="saveFicha();"><button onclick="removeItem(this); saveFicha();">Remover</button>`;
-                    inventoryList.appendChild(li);
-                });
-                const skillsList = document.getElementById('skillsList');
-                skillsList.innerHTML = '';
-                ficha.skills.forEach(skill => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `${skill} <input type="text" placeholder="Descrição" onchange="saveFicha();"><button onclick="removeItem(this); saveFicha();">Remover</button>`;
-                    skillsList.appendChild(li);
-                });
-                if (ficha.image) {
-                    document.getElementById('charImage').src = ficha.image;
-                    document.getElementById('charImage').style.display = 'block';
-                } else {
-                    document.getElementById('charImage').style.display = 'none';
-                }
-                document.getElementById('fichaContainer').style.display = 'grid';
-                document.getElementById('pranchetaBtn').style.display = 'block';
+                loadFichaById(ficha, currentUser);
             }
+        }
+
+        function loadFichaById(ficha, user) {
+            currentFichaId = ficha.id;
+            // Carregar dados na ficha
+            setTracker('pv', ficha.pv, '❤️');
+            setTracker('pf', ficha.pf, '⚡');
+            setTracker('hope', ficha.hope, '✨');
+            setTracker('slots', ficha.slots, '🛡️');
+            setTracker('proficiency', ficha.proficiency, '⭐');
+            setTracker('punhados', ficha.punhados, '🪙');
+            setTracker('bolsas', ficha.bolsas, '💰');
+            setTracker('cofres', ficha.cofres, '🏦');
+            document.querySelector('.section:nth-child(4) input').value = ficha.armor;
+            const attrInputs = document.querySelectorAll('.attr input');
+            ficha.attributes.forEach((val, i) => attrInputs[i].value = val);
+            const ticks = document.querySelectorAll('.tick');
+            ficha.ticks.forEach((active, i) => {
+                if (active) ticks[i].classList.add('active');
+                else ticks[i].classList.remove('active');
+            });
+            updateRadar();
+            const notesDiv = document.getElementById('notes');
+            notesDiv.innerHTML = '';
+            ficha.notes.forEach(note => {
+                const noteDiv = document.createElement('div');
+                noteDiv.className = 'note';
+                noteDiv.innerHTML = `<textarea onchange="saveFicha();">${note}</textarea><i class="fas fa-times delete" onclick="deleteNote(this); saveFicha();"></i>`;
+                notesDiv.appendChild(noteDiv);
+            });
+            const inventoryList = document.getElementById('inventoryList');
+            inventoryList.innerHTML = '';
+            ficha.inventory.forEach(item => {
+                const li = document.createElement('li');
+                li.innerHTML = `${item} <input type="text" placeholder="Descrição" onchange="saveFicha();"><button onclick="removeItem(this); saveFicha();">Remover</button>`;
+                inventoryList.appendChild(li);
+            });
+            const skillsList = document.getElementById('skillsList');
+            skillsList.innerHTML = '';
+            ficha.skills.forEach(skill => {
+                const li = document.createElement('li');
+                li.innerHTML = `${skill} <input type="text" placeholder="Descrição" onchange="saveFicha();"><button onclick="removeItem(this); saveFicha();">Remover</button>`;
+                skillsList.appendChild(li);
+            });
+            if (ficha.image) {
+                document.getElementById('charImage').src = ficha.image;
+                document.getElementById('charImage').style.display = 'block';
+            } else {
+                document.getElementById('charImage').style.display = 'none';
+            }
+            document.getElementById('fichaContainer').style.display = 'grid';
+            document.getElementById('pranchetaBtn').style.display = 'block';
         }
 
         function deleteFicha(id) {
@@ -702,30 +771,33 @@
 
         function saveFicha() {
             if (!currentFichaId) return;
-            const fichas = JSON.parse(localStorage.getItem(`fichas_${currentUser}`) || '[]');
-            const ficha = fichas.find(f => f.id === currentFichaId);
-            if (ficha) {
-                ficha.pv = parseInt(document.querySelector('#pv').children.length);
-                ficha.pf = parseInt(document.querySelector('#pf').children.length);
-                ficha.hope = parseInt(document.querySelector('#hope').children.length);
-                ficha.slots = parseInt(document.querySelector('#slots').children.length);
-                ficha.proficiency = parseInt(document.querySelector('#proficiency').children.length);
-                ficha.punhados = parseInt(document.querySelector('#punhados').children.length);
-                ficha.bolsas = parseInt(document.querySelector('#bolsas').children.length);
-                ficha.cofres = parseInt(document.querySelector('#cofres').children.length);
-                ficha.armor = document.querySelector('.section:nth-child(4) input').value;
-                const attrInputs = document.querySelectorAll('.attr input');
-                ficha.attributes = Array.from(attrInputs).map(input => parseInt(input.value) || 0);
-                const ticks = document.querySelectorAll('.tick');
-                ficha.ticks = Array.from(ticks).map(tick => tick.classList.contains('active'));
-                const notes = document.querySelectorAll('#notes textarea');
-                ficha.notes = Array.from(notes).map(textarea => textarea.value);
-                const inventoryItems = document.querySelectorAll('#inventoryList li');
-                ficha.inventory = Array.from(inventoryItems).map(li => li.firstChild.textContent.trim());
-                const skillsItems = document.querySelectorAll('#skillsList li');
-                ficha.skills = Array.from(skillsItems).map(li => li.firstChild.textContent.trim());
-                ficha.image = document.getElementById('charImage').src;
-                localStorage.setItem(`fichas_${currentUser}`, JSON.stringify(fichas));
+            // Salvar apenas se for do usuário atual (não permite editar fichas de outros usuários)
+            if (currentUser) {
+                const fichas = JSON.parse(localStorage.getItem(`fichas_${currentUser}`) || '[]');
+                const ficha = fichas.find(f => f.id === currentFichaId);
+                if (ficha) {
+                    ficha.pv = parseInt(document.querySelector('#pv').children.length);
+                    ficha.pf = parseInt(document.querySelector('#pf').children.length);
+                    ficha.hope = parseInt(document.querySelector('#hope').children.length);
+                    ficha.slots = parseInt(document.querySelector('#slots').children.length);
+                    ficha.proficiency = parseInt(document.querySelector('#proficiency').children.length);
+                    ficha.punhados = parseInt(document.querySelector('#punhados').children.length);
+                    ficha.bolsas = parseInt(document.querySelector('#bolsas').children.length);
+                    ficha.cofres = parseInt(document.querySelector('#cofres').children.length);
+                    ficha.armor = document.querySelector('.section:nth-child(4) input').value;
+                    const attrInputs = document.querySelectorAll('.attr input');
+                    ficha.attributes = Array.from(attrInputs).map(input => parseInt(input.value) || 0);
+                    const ticks = document.querySelectorAll('.tick');
+                    ficha.ticks = Array.from(ticks).map(tick => tick.classList.contains('active'));
+                    const notes = document.querySelectorAll('#notes textarea');
+                    ficha.notes = Array.from(notes).map(textarea => textarea.value);
+                    const inventoryItems = document.querySelectorAll('#inventoryList li');
+                    ficha.inventory = Array.from(inventoryItems).map(li => li.firstChild.textContent.trim());
+                    const skillsItems = document.querySelectorAll('#skillsList li');
+                    ficha.skills = Array.from(skillsItems).map(li => li.firstChild.textContent.trim());
+                    ficha.image = document.getElementById('charImage').src;
+                    localStorage.setItem(`fichas_${currentUser}`, JSON.stringify(fichas));
+                }
             }
         }
 
