@@ -702,7 +702,17 @@
                 notes: [''],
                 inventory: ['Item 1'],
                 skills: ['Habilidade 1'],
-                image: ''
+                image: '',
+                activeIcons: {
+                    pv: Array(5).fill(false),
+                    pf: Array(5).fill(false),
+                    hope: Array(6).fill(false),
+                    slots: Array(1).fill(false),
+                    proficiency: Array(0).fill(false),
+                    punhados: Array(10).fill(false),
+                    bolsas: Array(10).fill(false),
+                    cofres: Array(10).fill(false)
+                }
             };
             globalFichas[currentUser].push(newFicha);
             setGlobalFichas(globalFichas);
@@ -721,14 +731,14 @@
         function loadFichaById(ficha, user) {
             currentFichaId = ficha.id;
             // Carregar dados na ficha
-            setTracker('pv', ficha.pv, '❤️');
-            setTracker('pf', ficha.pf, '⚡');
-            setTracker('hope', ficha.hope, '✨');
-            setTracker('slots', ficha.slots, '🛡️');
-            setTracker('proficiency', ficha.proficiency, '⭐');
-            setTracker('punhados', ficha.punhados, '🪙');
-            setTracker('bolsas', ficha.bolsas, '💰');
-            setTracker('cofres', ficha.cofres, '🏦');
+            setTracker('pv', ficha.pv, '❤️', ficha.activeIcons.pv);
+            setTracker('pf', ficha.pf, '⚡', ficha.activeIcons.pf);
+            setTracker('hope', ficha.hope, '✨', ficha.activeIcons.hope);
+            setTracker('slots', ficha.slots, '🛡️', ficha.activeIcons.slots);
+            setTracker('proficiency', ficha.proficiency, '⭐', ficha.activeIcons.proficiency);
+            setTracker('punhados', ficha.punhados, '🪙', ficha.activeIcons.punhados);
+            setTracker('bolsas', ficha.bolsas, '💰', ficha.activeIcons.bolsas);
+            setTracker('cofres', ficha.cofres, '🏦', ficha.activeIcons.cofres);
             document.querySelector('.section:nth-child(4) input').value = ficha.armor;
             const attrInputs = document.querySelectorAll('.attr input');
             ficha.attributes.forEach((val, i) => attrInputs[i].value = val);
@@ -810,18 +820,28 @@
                     const skillsItems = document.querySelectorAll('#skillsList li');
                     ficha.skills = Array.from(skillsItems).map(li => li.firstChild.textContent.trim());
                     ficha.image = document.getElementById('charImage').src;
+                    // Salvar estado dos ícones
+                    ficha.activeIcons.pv = Array.from(document.querySelectorAll('#pv .icon')).map(icon => icon.classList.contains('active'));
+                    ficha.activeIcons.pf = Array.from(document.querySelectorAll('#pf .icon')).map(icon => icon.classList.contains('active'));
+                    ficha.activeIcons.hope = Array.from(document.querySelectorAll('#hope .icon')).map(icon => icon.classList.contains('active'));
+                    ficha.activeIcons.slots = Array.from(document.querySelectorAll('#slots .icon')).map(icon => icon.classList.contains('active'));
+                    ficha.activeIcons.proficiency = Array.from(document.querySelectorAll('#proficiency .icon')).map(icon => icon.classList.contains('active'));
+                    ficha.activeIcons.punhados = Array.from(document.querySelectorAll('#punhados .icon')).map(icon => icon.classList.contains('active'));
+                    ficha.activeIcons.bolsas = Array.from(document.querySelectorAll('#bolsas .icon')).map(icon => icon.classList.contains('active'));
+                    ficha.activeIcons.cofres = Array.from(document.querySelectorAll('#cofres .icon')).map(icon => icon.classList.contains('active'));
                     setGlobalFichas(globalFichas);
                 }
             }
         }
 
         // Funções para trackers
-        function createTracker(id, amount, icon) {
+        function createTracker(id, amount, icon, activeStates = []) {
             const el = document.getElementById(id);
             el.innerHTML = '';
             for (let i = 0; i < amount; i++) {
                 const span = document.createElement('span');
                 span.className = 'icon';
+                if (activeStates[i]) span.classList.add('active');
                 span.innerText = icon;
                 span.onclick = () => {
                     span.classList.toggle('active');
@@ -831,8 +851,8 @@
             }
         }
 
-        function setTracker(id, amount, icon) {
-            createTracker(id, Math.max(amount, 0), icon);
+        function setTracker(id, amount, icon, activeStates = []) {
+            createTracker(id, Math.max(amount, 0), icon, activeStates);
         }
 
         // Toggle tick para atributos
