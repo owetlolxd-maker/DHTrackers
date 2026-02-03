@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ficha de RPG - Sistema de Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
+            color: #eaeaea;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .login-form {
+            background: rgba(26, 26, 26, 0.9);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            width: 300px;
+            text-align: center;
+        }
+        .login-form h2 {
+            margin-bottom: 20px;
+        }
+        .login-form input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #555;
+            border-radius: 5px;
+            background: #2a2a2a;
+            color: #fff;
+        }
+        .login-form button {
+            width: 100%;
+            padding: 10px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .login-form button:hover {
+            background: #45a049;
+        }
+        .dashboard {
+            display: none;
+        }
+        .dashboard.show {
+            display: block;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 20px;
+        }
+        .main-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .section {
+            background: rgba(26, 26, 26, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            border: 1px solid #333;
+        }
+        h2 {
+            margin-bottom: 15px;
+            border-bottom: 2px solid #555;
+            padding-bottom: 8px;
+            color: #fff;
+            font-size: 1.2em;
+        }
+        .tracker {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .icon {
+            font-size: 32px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            opacity: 0.5;
+            filter: grayscale(100%);
+            min-width: 44px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .icon.active {
+            opacity: 1;
+            filter: none;
+            transform: scale(1.1);
+        }
+        input[type="number"], input[type="text"], textarea {
+            background: #2a2a2a;
+            border: 1px solid #555;
+            color: #fff;
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        input[type="number"]:focus, input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: #777;
+        }
+        .attributes {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .attr {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #1a1a1a;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #333;
+        }
+        .attr input {
+            width: 60px;
+            text-align: center;
+        }
+        .attr .tick {
+            font-size: 20px;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: color 0.3s;
+            min-width: 44px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .attr .tick.active {
+            color: #4CAF50;
+        }
+        .radar-chart {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .notes {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .note {
+            background: #2a2a2a;
+            padding: 10px;
+            border-radius: 5px;
+            position: relative;
+            min-height: 50px;
+        }
+        .note textarea {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: transparent;
+            color: #fff;
+            resize: none;
+        }
+        .note .delete {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            cursor: pointer;
+            color: #ff6b6b;
+            min-width: 44px;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .character-image {
+            text-align: center;
+        }
+        .character-image img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            border: 2px solid #555;
+        }
+        .add-note {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            min-height: 44px;
+        }
+        .add-note:hover {
+            background: #45a049;
+        }
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .inventory, .skills {
+            background: rgba(26, 26, 26, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            border: 1px solid #333;
+        }
+        .inventory ul, .skills ul {
+            list-style: none;
+            padding: 0;
+        }
+        .inventory li, .skills li {
+            background: #2a2a2a;
+            margin-bottom: 5px;
+            padding: 8px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .inventory li input, .skills li input {
+            flex-grow: 1;
+            margin-left: 10px;
+        }
+        .add-item {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            min-height: 44px;
+        }
+        .add-item:hover {
+            background: #1976D2;
+        }
+        .ficha-list {
+            background: rgba(26, 26, 26, 0.9);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            border: 1px solid #333;
+            margin-bottom: 20px;
+        }
+        .ficha-list ul {
+            list-style: none;
+            padding: 0;
+        }
+        .ficha-list li {
+            background: #2a2a2a;
+            margin-bottom: 5px;
+            padding: 10px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .ficha-list button {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            min-height: 44px;
+        }
+        .ficha-list button:hover {
+            background: #e55a5a;
+        }
+        .logout {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            min-height: 44px;
+        }
+        .logout:hover {
+            background: #e55a5a;
+        }
+        .prancheta-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none;
+            min-height: 44px;
+        }
+        .prancheta-btn:hover {
+            background: #1976D2;
+        }
+        /* Responsividade para tablets e celulares */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            .section {
+                padding: 15px;
+            }
+            h2 {
+                font-size: 1.1em;
+            }
+            .tracker {
+                gap: 6px;
+            }
+            .icon {
+                font-size: 28px;
+                min-width: 40px;
+                min-height: 40px;
+            }
+            .attr .tick {
+                font-size: 18px;
+                min-width: 40px;
+                min-height: 40px;
+            }
+            .radar-chart {
+                max-width: 100%;
+            }
+            .sidebar {
+                gap: 10px;
+            }
+            .inventory, .skills {
+                padding: 15px;
+            }
+            .ficha-list {
+                padding: 15px;
+            }
+            .logout {
+                top: 10px;
+                right: 10px;
+                padding: 8px;
+            }
+            .prancheta-btn {
+                top: 10px;
+                left: 10px;
+                padding: 8px;
+                font-size: 14px;
+            }
+        }
+        /* Responsividade para celulares pequenos */
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+            }
+            .login-form {
+                width: 90%;
+                padding: 20px;
+            }
+            .section {
+                padding: 10px;
+            }
+            h2 {
+                font-size: 1em;
+                margin-bottom: 10px;
+            }
+            .tracker {
+                gap: 4px;
+            }
+            .icon {
+                font-size: 24px;
+                min-width: 36px;
+                min-height: 36px;
+            }
+            .attr input {
+                width: 50px;
+            }
+            .attr .tick {
+                font-size: 16px;
+                min-width: 36px;
+                min-height: 36px;
+            }
+            .note .delete {
+                min-width: 36px;
+                min-height: 36px;
+            }
+            .add-note, .add-item {
+                padding: 12px;
+                font-size: 16px;
+            }
+            .ficha-list button {
+                padding: 8px;
+                font-size: 14px;
+            }
+            .logout, .prancheta-btn {
+                padding: 8px;
+                font-size: 14px;
+            }
+            .radar-chart canvas {
+                height: 200px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container" id="loginContainer">
+        <div class="login-form">
+            <h2>Login</h2>
+            <input type="text" id="username" placeholder="Usuário">
+            <input type="password" id="password" placeholder="Senha">
+            <button onclick="login()">Entrar</button>
+            <p id="loginError" style="color: red; display: none;">Usuário ou senha incorretos.</p>
+        </div>
+    </div>
+
+    <div class="dashboard" id="dashboard">
+        <button class="logout" onclick="logout()">Logout</button>
+        <button class="prancheta-btn" id="pranchetaBtn" onclick="openPrancheta()">🃏 Prancheta de Cartas</button>
+        <div class="ficha-list">
+            <h2>Suas Fichas</h2>
+            <ul id="fichaList"></ul>
+            <button onclick="createFicha()" style="background: #4CAF50; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; min-height: 44px;">Criar Nova Ficha</button>
+        </div>
+        <div class="container" id="fichaContainer" style="display: none;">
+            <div class="main-content">
+                <!-- PV -->
+                <div class="section">
+                    <h2><i class="fas fa-heart"></i> Pontos de Vida (PV)</h2>
+                    <div class="tracker" id="pv"></div>
+                    Quantidade: <input type="number" min="1" value="5" onchange="setTracker('pv', this.value, '❤️'); saveFicha();">
+                </div>
+
+                <!-- PF -->
+                <div class="section">
+                    <h2><i class="fas fa-bolt"></i> Pontos de Força (PF - Estresse)</h2>
+                    <div class="tracker" id="pf"></div>
+                    Quantidade: <input type="number" min="1" value="5" onchange="setTracker('pf', this.value, '⚡'); saveFicha();">
+                </div>
+
+                <!-- Hope -->
+                <div class="section">
+                    <h2><i class="fas fa-star"></i> Esperança</h2>
+                    <div class="tracker" id="hope"></div>
+                    Quantidade: <input type="number" min="1" value="6" onchange="setTracker('hope', this.value, '✨'); saveFicha();">
+                </div>
+
+                <!-- Armor -->
+                <div class="section">
+                    <h2><i class="fas fa-shield-alt"></i> Armadura</h2>
+                    Valor: <input type="text" placeholder="Ex: 2 / Leve" onchange="saveFicha();">
+                </div>
+
+                <!-- Slots de Armadura -->
+                <div class="section">
+                    <h2><i class="fas fa-shield-alt"></i> Slots de Armadura</h2>
+                    <div class="tracker" id="slots"></div>
+                    Quantidade: <input type="number" min="1" value="1" onchange="setTracker('slots', this.value, '🛡️'); saveFicha();">
+                </div>
+
+                <!-- Proficiência -->
+                <div class="section">
+                    <h2><i class="fas fa-star"></i> Proficiência</h2>
+                    <div class="tracker" id="proficiency"></div>
+                    Quantidade: <input type="number" min="0" max="6" value="0" onchange="setTracker('proficiency', this.value, '⭐'); saveFicha();">
+                </div>
+
+                <!-- Gold -->
+                <div class="section">
+                    <h2><i class="fas fa-coins"></i> Ouro</h2>
+                    Punhados <div class="tracker" id="punhados"></div>
+                    Bolsas <div class="tracker" id="bolsas"></div>
+                    Cofres <div class="tracker" id="cofres"></div>
+                </div>
+
+                <!-- Attributes -->
+                <div class="section">
+                    <h2><i class="fas fa-chart-line"></i> Atributos</h2>
+                    <div class="attributes">
+                        <div class="attr">Agilidade <input type="number" min="-1" value="0" onchange="updateRadar(); saveFicha();"> <span class="tick" onclick="toggleTick(this); saveFicha();">✓</span></div>
+                        <div class="attr">Força <input type="number" min="-1" value="0" onchange="updateRadar(); saveFicha();"> <span class="tick" onclick="toggleTick(this); saveFicha();">✓</span></div>
+                        <div class="attr">Finesse <input type="number" min="-1" value="0" onchange="updateRadar(); saveFicha();"> <span class="tick" onclick="toggleTick(this); saveFicha();">✓</span></div>
+                        <div class="attr">Instinto <input type="number" min="-1" value="0" onchange="updateRadar(); saveFicha();"> <span class="tick" onclick="toggleTick(this); saveFicha();">✓</span></div>
+                        <div class="attr">Presença <input type="number" min="-1" value="0" onchange="updateRadar(); saveFicha();"> <span class="tick" onclick="toggleTick(this); saveFicha();">✓</span></div>
+                        <div class="attr">Conhecimento <input type="number" min="-1" value="0" onchange="updateRadar(); saveFicha();"> <span class="tick" onclick="toggleTick(this); saveFicha();">✓</span></div>
+                    </div>
+                    <div class="radar-chart">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Anotações -->
+                <div class="section">
+                    <h2><i class="fas fa-sticky-note"></i> Anotações</h2>
+                    <div class="notes" id="notes">
+                        <div class="note">
+                            <textarea placeholder="Digite suas anotações aqui..." onchange="saveFicha();"></textarea>
+                            <i class="fas fa-times delete" onclick="deleteNote(this); saveFicha();"></i>
+                        </div>
+                    </div>
+                    <button class="add-note" onclick="addNote(); saveFicha();">Adicionar Nota</button>
+                </div>
+
+                <!-- Imagem do Personagem -->
+                <div class="section character-image">
+                    <h2><i class="fas fa-user-circle"></i> Imagem do Personagem</h2>
+                    <input type="file" accept="image/*" onchange="loadImage(event); saveFicha();">
+                    <img id="charImage" src="" alt="Imagem do Personagem" style="display: none;">
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <!-- Inventário -->
+                <div class="section inventory">
+                    <h2><i class="fas fa-backpack"></i> Inventário</h2>
+                    <ul id="inventoryList">
+                        <li>Item 1 <input type="text" placeholder="Descrição" onchange="saveFicha();"><button onclick="removeItem(this); saveFicha();">Remover</button></li>
+                    </ul>
+                    <button class="add-item" onclick="addItem('inventory'); saveFicha();">Adicionar Item</button>
+                </div>
+
+                <!-- Habilidades -->
+                <div class="section skills">
+                    <h2><i class="fas fa-magic"></i> Habilidades</h2>
+                    <ul id="skillsList">
+                        <li>Habilidade 1 <input type="text" placeholder="Descrição" onchange="saveFicha();"><button onclick="removeItem(this); saveFicha();">Remover</button></li>
+                    </ul>
+                    <button class="add-item" onclick="addItem('skills'); saveFicha();">Adicionar Habilidade</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let currentFichaId = null;
+
+        // Usuários definidos
+        const users = {
+            'Elion': 'sol123',
+            'Zig': 'lua456',
+            'Kai': 'cafe789'
+        };
+
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            if (users[username] === password) {
+                currentUser = username;
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('dashboard').classList.add('show');
+                loadFichas();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            currentFichaId = null;
+            document.getElementById('dashboard').classList.remove('show');
+            document.getElementById('loginContainer').style.display = 'flex';
+            document.getElementById('fichaContainer').style.display = 'none';
+            document.getElementById('pranchetaBtn').style.display = 'none';
+        }
+
+        function openPrancheta() {
+            window.open('https://owetlolxd-maker.github.io/DaggerheartCards/', '_blank');
+        }
+
+        function loadFichas() {
+            const fichas = JSON.parse(localStorage.getItem(`fichas_${currentUser}`) || '[]');
+            const list = document.getElementById('fichaList');
+            list.innerHTML = '';
+            fichas.forEach(ficha => {
+                const li = document.createElement('li');
+                li.innerHTML = `Ficha ${ficha.id} <button onclick="loadFicha(${ficha.id})">Carregar</button><button onclick="deleteFicha(${ficha.id})">Deletar</button>`;
+                list.appendChild(li);
+            });
+        }
+
+        function createFicha() {
+            const fichas = JSON.parse(localStorage.getItem(`fichas_${currentUser}`) || '[]');
+            const newId = Date.now(); // ID único baseado em timestamp
+            const newFicha = {
+                id: newId,
+                pv: 5,
+                pf: 5,
+                hope: 6,
+                slots: 1,
+                proficiency: 0,
+                punhados: 10,
+                bolsas: 10,
+                cofres: 10,
+                armor: '',
+                attributes: [0, 0, 0, 0, 0, 0],
+                ticks: [false, false, false, false, false, false],
+                notes: [''],
+                inventory: ['Item 1'],
+                skills: ['Habilidade 1'],
+                image: ''
+            };
+            fichas.push(newFicha);
+            localStorage.setItem(`fichas_${currentUser}`, JSON.stringify(fichas));
+            loadFichas();
+        }
+
+        function loadFicha(id) {
+            const fichas = JSON.parse(localStorage.getItem(`fichas_${currentUser}`) || '[]');
+            const ficha = fichas.find(f => f.id === id);
+            if (ficha) {
+                currentFichaId = id;
+                // Carregar dados na ficha
+                setTracker('pv', ficha.pv, '❤️');
+                setTracker('pf', ficha.pf, '⚡');
+                setTracker('hope', ficha.hope, '✨');
+                setTracker('slots', ficha.slots, '🛡️');
+                setTracker('proficiency', ficha.proficiency, '⭐');
+                setTracker('punhados', ficha.punhados, '🪙');
+                setTracker('bolsas', ficha.bolsas, '💰');
+                setTracker('cofres', ficha.cofres, '🏦');
+                document.querySelector('.section:nth-child(4) input').value = ficha.armor;
+                const attrInputs = document.querySelectorAll('.attr input');
+                ficha.attributes.forEach((val, i) => attrInputs[i].value = val);
+                const ticks = document.querySelectorAll('.tick');
+                ficha.ticks.forEach((active, i) => {
+                    if (active) ticks[i].classList.add('active');
+                    else ticks[i].classList.remove('active');
+                });
+                updateRadar();
+                const notesDiv = document.getElementById('notes');
+                notesDiv.innerHTML = '';
+                ficha.notes.forEach(note => {
+                    const noteDiv = document.createElement('div');
+                    noteDiv.className = 'note';
+                    noteDiv.innerHTML = `<textarea onchange="saveFicha();">${note}</textarea><i class="fas fa-times delete" onclick="deleteNote(this); saveFicha();"></i>`;
+                    notesDiv.appendChild(noteDiv);
+                });
+                const inventoryList = document.getElementById('inventoryList');
+                inventoryList.innerHTML = '';
+                ficha.inventory.forEach(item => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `${item} <input type="text" placeholder="Descrição" onchange="saveFicha();"><button onclick="removeItem(this); saveFicha();">Remover</button>`;
+                    inventoryList.appendChild(li);
+                });
+                const skillsList = document.getElementById('skillsList');
+                skillsList.innerHTML = '';
+                ficha.skills.forEach(skill => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `${skill} <input type="text" placeholder="Descrição" onchange="saveFicha();"><button onclick="removeItem(this); saveFicha();">Remover</button>`;
+                    skillsList.appendChild(li);
+                });
+                if (ficha.image) {
+                    document.getElementById('charImage').src = ficha.image;
+                    document.getElementById('charImage').style.display = 'block';
+                } else {
+                    document.getElementById('charImage').style.display = 'none';
+                }
+                document.getElementById('fichaContainer').style.display = 'grid';
+                document.getElementById('pranchetaBtn').style.display = 'block';
+            }
+        }
+
+        function deleteFicha(id) {
+            const fichas = JSON.parse(localStorage.getItem(`fichas_${currentUser}`) || '[]');
+            const updatedFichas = fichas.filter(f => f.id !== id);
+            localStorage.setItem(`fichas_${currentUser}`, JSON.stringify(updatedFichas));
+            loadFichas();
+            if (currentFichaId === id) {
+                document.getElementById('fichaContainer').style.display = 'none';
+                document.getElementById('pranchetaBtn').style.display = 'none';
+                currentFichaId = null;
+            }
+        }
+
+        function saveFicha() {
+            if (!currentFichaId) return;
+            const fichas = JSON.parse(localStorage.getItem(`fichas_${currentUser}`) || '[]');
+            const ficha = fichas.find(f => f.id === currentFichaId);
+            if (ficha) {
+                ficha.pv = parseInt(document.querySelector('#pv').children.length);
+                ficha.pf = parseInt(document.querySelector('#pf').children.length);
+                ficha.hope = parseInt(document.querySelector('#hope').children.length);
+                ficha.slots = parseInt(document.querySelector('#slots').children.length);
+                ficha.proficiency = parseInt(document.querySelector('#proficiency').children.length);
+                ficha.punhados = parseInt(document.querySelector('#punhados').children.length);
+                ficha.bolsas = parseInt(document.querySelector('#bolsas').children.length);
+                ficha.cofres = parseInt(document.querySelector('#cofres').children.length);
+                ficha.armor = document.querySelector('.section:nth-child(4) input').value;
+                const attrInputs = document.querySelectorAll('.attr input');
+                ficha.attributes = Array.from(attrInputs).map(input => parseInt(input.value) || 0);
+                const ticks = document.querySelectorAll('.tick');
+                ficha.ticks = Array.from(ticks).map(tick => tick.classList.contains('active'));
+                const notes = document.querySelectorAll('#notes textarea');
+                ficha.notes = Array.from(notes).map(textarea => textarea.value);
+                const inventoryItems = document.querySelectorAll('#inventoryList li');
+                ficha.inventory = Array.from(inventoryItems).map(li => li.firstChild.textContent.trim());
+                const skillsItems = document.querySelectorAll('#skillsList li');
+                ficha.skills = Array.from(skillsItems).map(li => li.firstChild.textContent.trim());
+                ficha.image = document.getElementById('charImage').src;
+                localStorage.setItem(`fichas_${currentUser}`, JSON.stringify(fichas));
+            }
+        }
+
+        // Funções para trackers
+        function createTracker(id, amount, icon) {
+            const el = document.getElementById(id);
+            el.innerHTML = '';
+            for (let i = 0; i < amount; i++) {
+                const span = document.createElement('span');
+                span.className = 'icon';
+                span.innerText = icon;
+                span.onclick = () => {
+                    span.classList.toggle('active');
+                    saveFicha();
+                };
+                el.appendChild(span);
+            }
+        }
+
+        function setTracker(id, amount, icon) {
+            createTracker(id, Math.max(amount, 0), icon);
+        }
+
+        // Toggle tick para atributos
+        function toggleTick(el) {
+            el.classList.toggle('active');
+        }
+
+        // Gráfico de Radar
+        const ctx = document.getElementById('radarChart').getContext('2d');
+        const radarChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['Agilidade', 'Força', 'Finesse', 'Instinto', 'Presença', 'Conhecimento'],
+                datasets: [{
+                    label: 'Atributos',
+                    data: [0, 0, 0, 0, 0, 0],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        min: -1,
+                        max: 10,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        function updateRadar() {
+            const attrs = document.querySelectorAll('.attr input');
+            const data = Array.from(attrs).map(input => parseInt(input.value) || 0);
+            radarChart.data.datasets[0].data = data;
+            radarChart.update();
+        }
+
+        // Anotações (Post-its)
+        function addNote() {
+            const notes = document.getElementById('notes');
+            const note = document.createElement('div');
+            note.className = 'note';
+            note.innerHTML = '<textarea placeholder="Digite suas anotações aqui..." onchange="saveFicha();"></textarea><i class="fas fa-times delete" onclick="deleteNote(this); saveFicha();"></i>';
+            notes.appendChild(note);
+        }
+
+        function deleteNote(el) {
+            el.parentElement.remove();
+        }
+
+        // Imagem do Personagem
+        function loadImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById('charImage');
+                    img.src = e.target.result;
+                    img.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Inventário e Habilidades
+        function addItem(type) {
+            const list = document.getElementById(type + 'List');
+            const li = document.createElement('li');
+            li.innerHTML = 'Novo ' + (type === 'inventory' ? 'Item' : 'Habilidade') + ' <input type="text" placeholder="Descrição" onchange="saveFicha();"><button onclick="removeItem(this); saveFicha();">Remover</button>';
+            list.appendChild(li);
+        }
+
+        function removeItem(el) {
+            el.parentElement.remove();
+        }
+    </script>
+</body>
+</html>
