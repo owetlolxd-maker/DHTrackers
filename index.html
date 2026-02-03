@@ -6,6 +6,81 @@
     <title>Ficha de RPG - Sistema de Login</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = 'https://ynznnuogfedbvxoojcdp.supabase.co'
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inluem5udW9nZmVkYnZ4b29qY2RwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxNTA0MTcsImV4cCI6MjA4NTcyNjQxN30._RhkU6Fg-VR0eMFDYTF-LVnLgqRDuuFOr0xhsACSczs'
+
+        const supabase = supabase.createClient(supabaseUrl, supabaseKey)
+
+        async function signUp(email, password) {
+            const { error } = await supabase.auth.signUp({ email, password })
+            if (error) {
+                alert(error.message)
+            } else {
+                alert('Conta criada! Verifique o email.')
+            }
+        }
+
+        async function signIn(email, password) {
+            const { error } = await supabase.auth.signInWithPassword({
+                email,
+                password
+            })
+            if (error) alert(error.message)
+        }
+
+        async function logout() {
+            await supabase.auth.signOut()
+            location.reload()
+        }
+
+        async function getUser() {
+            const { data: { user } } = await supabase.auth.getUser()
+            return user
+        }
+
+        async function saveSheet(sheetName, trackersData) {
+            const user = await getUser()
+            if (!user) return alert('Faça login primeiro')
+
+            const { error } = await supabase
+                .from('sheets')
+                .insert({
+                    user_id: user.id,
+                    name: sheetName,
+                    data: trackersData
+                })
+
+            if (error) {
+                console.error(error)
+                alert('Erro ao salvar ficha')
+            }
+        }
+
+        async function updateSheet(sheetId, trackersData) {
+            const { error } = await supabase
+                .from('sheets')
+                .update({ data: trackersData })
+                .eq('id', sheetId)
+
+            if (error) console.error(error)
+        }
+
+        async function loadSheets() {
+            const { data, error } = await supabase
+                .from('sheets')
+                .select('*')
+                .order('created_at', { ascending: false })
+
+            if (error) {
+                console.error(error)
+                return []
+            }
+
+            return data
+        }
+    </script>
     <style>
         body {
             background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
@@ -471,10 +546,11 @@
     <div class="login-container" id="loginContainer">
         <div class="login-form">
             <h2>Login</h2>
-            <input type="text" id="username" placeholder="Usuário">
+            <input type="email" id="email" placeholder="Email">
             <input type="password" id="password" placeholder="Senha">
-            <button onclick="login()">Entrar</button>
-            <p id="loginError" style="color: red; display: none;">Usuário ou senha incorretos.</p>
+            <button onclick="signIn(document.getElementById('email').value, document.getElementById('password').value)">Entrar</button>
+            <button onclick="signUp(document.getElementById('email').value, document.getElementById('password').value)">Criar Conta</button>
+            <p id="loginError" style="color: red; display: none;">Erro no login.</p>
         </div>
     </div>
 
@@ -605,89 +681,58 @@
         let currentUser = null;
         let currentFichaId = null;
 
-        // Usuários definidos
-        const users = {
-            'Elion': 'sol123',
-            'Zig': 'lua456',
-            'Kai': 'cafe789'
-        };
-
-        // Simulação de compartilhamento entre dispositivos usando localStorage global (não real, mas para demonstração)
-        // Nota: Em produção, use um backend como Firebase, Node.js, etc.
-        function getGlobalFichas() {
-            return JSON.parse(localStorage.getItem('globalFichas') || '{}');
-        }
-
-        function setGlobalFichas(globalFichas) {
-            localStorage.setItem('globalFichas', JSON.stringify(globalFichas));
-        }
-
-        function login() {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            if (users[username] === password) {
-                currentUser = username;
+        // Verificar se usuário está logado ao carregar
+        async function init() {
+            const user = await getUser();
+            if (user) {
+                currentUser = user;
                 document.getElementById('loginContainer').style.display = 'none';
                 document.getElementById('dashboard').classList.add('show');
                 loadFichas();
-            } else {
-                document.getElementById('loginError').style.display = 'block';
             }
         }
 
-        function logout() {
-            currentUser = null;
-            currentFichaId = null;
-            document.getElementById('dashboard').classList.remove('show');
-            document.getElementById('loginContainer').style.display = 'flex';
-            document.getElementById('fichaContainer').style.display = 'none';
-            document.getElementById('pranchetaBtn').style.display = 'none';
+        init();
+
+        function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            signIn(email, password).then(() => {
+                init();
+            });
         }
 
         function openPrancheta() {
             window.open('https://owetlolxd-maker.github.io/DaggerheartCards/', '_blank');
         }
 
-        function searchFicha() {
+        async function searchFicha() {
             const searchId = document.getElementById('searchId').value;
             if (!searchId) return;
-            const globalFichas = getGlobalFichas();
-            let foundFicha = null;
-            let foundUser = null;
-            for (const user in globalFichas) {
-                const fichas = globalFichas[user] || [];
-                foundFicha = fichas.find(f => f.id == searchId);
-                if (foundFicha) {
-                    foundUser = user;
-                    break;
-                }
-            }
-            if (foundFicha) {
-                loadFichaById(foundFicha, foundUser);
+            const sheets = await loadSheets();
+            const ficha = sheets.find(s => s.id == searchId);
+            if (ficha) {
+                loadFichaById(ficha);
                 document.getElementById('searchError').style.display = 'none';
             } else {
                 document.getElementById('searchError').style.display = 'block';
             }
         }
 
-        function loadFichas() {
-            const globalFichas = getGlobalFichas();
-            const fichas = globalFichas[currentUser] || [];
+        async function loadFichas() {
+            const sheets = await loadSheets();
+            const userSheets = sheets.filter(s => s.user_id === currentUser.id);
             const list = document.getElementById('fichaList');
             list.innerHTML = '';
-            fichas.forEach(ficha => {
+            userSheets.forEach(ficha => {
                 const li = document.createElement('li');
                 li.innerHTML = `Ficha ${ficha.id} <button onclick="loadFicha(${ficha.id})">Carregar</button><button onclick="deleteFicha(${ficha.id})">Deletar</button>`;
                 list.appendChild(li);
             });
         }
 
-        function createFicha() {
-            const globalFichas = getGlobalFichas();
-            if (!globalFichas[currentUser]) globalFichas[currentUser] = [];
-            const newId = Date.now(); // ID único baseado em timestamp
+        async function createFicha() {
             const newFicha = {
-                id: newId,
                 pv: 5,
                 pf: 5,
                 hope: 6,
@@ -714,43 +759,42 @@
                     cofres: Array(10).fill(false)
                 }
             };
-            globalFichas[currentUser].push(newFicha);
-            setGlobalFichas(globalFichas);
+            await saveSheet('Nova Ficha', newFicha);
             loadFichas();
         }
 
-        function loadFicha(id) {
-            const globalFichas = getGlobalFichas();
-            const fichas = globalFichas[currentUser] || [];
-            const ficha = fichas.find(f => f.id === id);
+        async function loadFicha(id) {
+            const sheets = await loadSheets();
+            const ficha = sheets.find(s => s.id === id);
             if (ficha) {
-                loadFichaById(ficha, currentUser);
+                loadFichaById(ficha);
             }
         }
 
-        function loadFichaById(ficha, user) {
+        function loadFichaById(ficha) {
             currentFichaId = ficha.id;
+            const data = ficha.data;
             // Carregar dados na ficha
-            setTracker('pv', ficha.pv, '❤️', ficha.activeIcons.pv);
-            setTracker('pf', ficha.pf, '⚡', ficha.activeIcons.pf);
-            setTracker('hope', ficha.hope, '✨', ficha.activeIcons.hope);
-            setTracker('slots', ficha.slots, '🛡️', ficha.activeIcons.slots);
-            setTracker('proficiency', ficha.proficiency, '⭐', ficha.activeIcons.proficiency);
-            setTracker('punhados', ficha.punhados, '🪙', ficha.activeIcons.punhados);
-            setTracker('bolsas', ficha.bolsas, '💰', ficha.activeIcons.bolsas);
-            setTracker('cofres', ficha.cofres, '🏦', ficha.activeIcons.cofres);
-            document.querySelector('.section:nth-child(4) input').value = ficha.armor;
+            setTracker('pv', data.pv, '❤️', data.activeIcons.pv);
+            setTracker('pf', data.pf, '⚡', data.activeIcons.pf);
+            setTracker('hope', data.hope, '✨', data.activeIcons.hope);
+            setTracker('slots', data.slots, '🛡️', data.activeIcons.slots);
+            setTracker('proficiency', data.proficiency, '⭐', data.activeIcons.proficiency);
+            setTracker('punhados', data.punhados, '🪙', data.activeIcons.punhados);
+            setTracker('bolsas', data.bolsas, '💰', data.activeIcons.bolsas);
+            setTracker('cofres', data.cofres, '🏦', data.activeIcons.cofres);
+            document.querySelector('.section:nth-child(4) input').value = data.armor;
             const attrInputs = document.querySelectorAll('.attr input');
-            ficha.attributes.forEach((val, i) => attrInputs[i].value = val);
+            data.attributes.forEach((val, i) => attrInputs[i].value = val);
             const ticks = document.querySelectorAll('.tick');
-            ficha.ticks.forEach((active, i) => {
+            data.ticks.forEach((active, i) => {
                 if (active) ticks[i].classList.add('active');
                 else ticks[i].classList.remove('active');
             });
             updateRadar();
             const notesDiv = document.getElementById('notes');
             notesDiv.innerHTML = '';
-            ficha.notes.forEach(note => {
+            data.notes.forEach(note => {
                 const noteDiv = document.createElement('div');
                 noteDiv.className = 'note';
                 noteDiv.innerHTML = `<textarea onchange="saveFicha();">${note}</textarea><i class="fas fa-times delete" onclick="deleteNote(this); saveFicha();"></i>`;
@@ -758,20 +802,20 @@
             });
             const inventoryList = document.getElementById('inventoryList');
             inventoryList.innerHTML = '';
-            ficha.inventory.forEach(item => {
+            data.inventory.forEach(item => {
                 const li = document.createElement('li');
                 li.innerHTML = `${item} <input type="text" placeholder="Descrição" onchange="saveFicha();"><button onclick="removeItem(this); saveFicha();">Remover</button>`;
                 inventoryList.appendChild(li);
             });
             const skillsList = document.getElementById('skillsList');
             skillsList.innerHTML = '';
-            ficha.skills.forEach(skill => {
+            data.skills.forEach(skill => {
                 const li = document.createElement('li');
                 li.innerHTML = `${skill} <input type="text" placeholder="Descrição" onchange="saveFicha();"><button onclick="removeItem(this); saveFicha();">Remover</button>`;
                 skillsList.appendChild(li);
             });
-            if (ficha.image) {
-                document.getElementById('charImage').src = ficha.image;
+            if (data.image) {
+                document.getElementById('charImage').src = data.image;
                 document.getElementById('charImage').style.display = 'block';
             } else {
                 document.getElementById('charImage').style.display = 'none';
@@ -780,13 +824,13 @@
             document.getElementById('pranchetaBtn').style.display = 'block';
         }
 
-        function deleteFicha(id) {
-            const globalFichas = getGlobalFichas();
-            if (globalFichas[currentUser]) {
-                globalFichas[currentUser] = globalFichas[currentUser].filter(f => f.id !== id);
-                setGlobalFichas(globalFichas);
-                loadFichas();
-            }
+        async function deleteFicha(id) {
+            const { error } = await supabase
+                .from('sheets')
+                .delete()
+                .eq('id', id);
+            if (error) console.error(error);
+            loadFichas();
             if (currentFichaId === id) {
                 document.getElementById('fichaContainer').style.display = 'none';
                 document.getElementById('pranchetaBtn').style.display = 'none';
@@ -794,44 +838,36 @@
             }
         }
 
-        function saveFicha() {
+        async function saveFicha() {
             if (!currentFichaId) return;
-            const globalFichas = getGlobalFichas();
-            if (globalFichas[currentUser]) {
-                const ficha = globalFichas[currentUser].find(f => f.id === currentFichaId);
-                if (ficha) {
-                    ficha.pv = parseInt(document.querySelector('#pv').children.length);
-                    ficha.pf = parseInt(document.querySelector('#pf').children.length);
-                    ficha.hope = parseInt(document.querySelector('#hope').children.length);
-                    ficha.slots = parseInt(document.querySelector('#slots').children.length);
-                    ficha.proficiency = parseInt(document.querySelector('#proficiency').children.length);
-                    ficha.punhados = parseInt(document.querySelector('#punhados').children.length);
-                    ficha.bolsas = parseInt(document.querySelector('#bolsas').children.length);
-                    ficha.cofres = parseInt(document.querySelector('#cofres').children.length);
-                    ficha.armor = document.querySelector('.section:nth-child(4) input').value;
-                    const attrInputs = document.querySelectorAll('.attr input');
-                    ficha.attributes = Array.from(attrInputs).map(input => parseInt(input.value) || 0);
-                    const ticks = document.querySelectorAll('.tick');
-                    ficha.ticks = Array.from(ticks).map(tick => tick.classList.contains('active'));
-                    const notes = document.querySelectorAll('#notes textarea');
-                    ficha.notes = Array.from(notes).map(textarea => textarea.value);
-                    const inventoryItems = document.querySelectorAll('#inventoryList li');
-                    ficha.inventory = Array.from(inventoryItems).map(li => li.firstChild.textContent.trim());
-                    const skillsItems = document.querySelectorAll('#skillsList li');
-                    ficha.skills = Array.from(skillsItems).map(li => li.firstChild.textContent.trim());
-                    ficha.image = document.getElementById('charImage').src;
-                    // Salvar estado dos ícones
-                    ficha.activeIcons.pv = Array.from(document.querySelectorAll('#pv .icon')).map(icon => icon.classList.contains('active'));
-                    ficha.activeIcons.pf = Array.from(document.querySelectorAll('#pf .icon')).map(icon => icon.classList.contains('active'));
-                    ficha.activeIcons.hope = Array.from(document.querySelectorAll('#hope .icon')).map(icon => icon.classList.contains('active'));
-                    ficha.activeIcons.slots = Array.from(document.querySelectorAll('#slots .icon')).map(icon => icon.classList.contains('active'));
-                    ficha.activeIcons.proficiency = Array.from(document.querySelectorAll('#proficiency .icon')).map(icon => icon.classList.contains('active'));
-                    ficha.activeIcons.punhados = Array.from(document.querySelectorAll('#punhados .icon')).map(icon => icon.classList.contains('active'));
-                    ficha.activeIcons.bolsas = Array.from(document.querySelectorAll('#bolsas .icon')).map(icon => icon.classList.contains('active'));
-                    ficha.activeIcons.cofres = Array.from(document.querySelectorAll('#cofres .icon')).map(icon => icon.classList.contains('active'));
-                    setGlobalFichas(globalFichas);
+            const data = {
+                pv: parseInt(document.querySelector('#pv').children.length),
+                pf: parseInt(document.querySelector('#pf').children.length),
+                hope: parseInt(document.querySelector('#hope').children.length),
+                slots: parseInt(document.querySelector('#slots').children.length),
+                proficiency: parseInt(document.querySelector('#proficiency').children.length),
+                punhados: parseInt(document.querySelector('#punhados').children.length),
+                bolsas: parseInt(document.querySelector('#bolsas').children.length),
+                cofres: parseInt(document.querySelector('#cofres').children.length),
+                armor: document.querySelector('.section:nth-child(4) input').value,
+                attributes: Array.from(document.querySelectorAll('.attr input')).map(input => parseInt(input.value) || 0),
+                ticks: Array.from(document.querySelectorAll('.tick')).map(tick => tick.classList.contains('active')),
+                notes: Array.from(document.querySelectorAll('#notes textarea')).map(textarea => textarea.value),
+                inventory: Array.from(document.querySelectorAll('#inventoryList li')).map(li => li.firstChild.textContent.trim()),
+                skills: Array.from(document.querySelectorAll('#skillsList li')).map(li => li.firstChild.textContent.trim()),
+                image: document.getElementById('charImage').src,
+                activeIcons: {
+                    pv: Array.from(document.querySelectorAll('#pv .icon')).map(icon => icon.classList.contains('active')),
+                    pf: Array.from(document.querySelectorAll('#pf .icon')).map(icon => icon.classList.contains('active')),
+                    hope: Array.from(document.querySelectorAll('#hope .icon')).map(icon => icon.classList.contains('active')),
+                    slots: Array.from(document.querySelectorAll('#slots .icon')).map(icon => icon.classList.contains('active')),
+                    proficiency: Array.from(document.querySelectorAll('#proficiency .icon')).map(icon => icon.classList.contains('active')),
+                    punhados: Array.from(document.querySelectorAll('#punhados .icon')).map(icon => icon.classList.contains('active')),
+                    bolsas: Array.from(document.querySelectorAll('#bolsas .icon')).map(icon => icon.classList.contains('active')),
+                    cofres: Array.from(document.querySelectorAll('#cofres .icon')).map(icon => icon.classList.contains('active'))
                 }
-            }
+            };
+            await updateSheet(currentFichaId, data);
         }
 
         // Funções para trackers
