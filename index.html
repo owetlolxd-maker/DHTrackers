@@ -8,8 +8,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        const supabaseUrl = 'https://tkywstvoqbqrmuerfaoi.supabase.co'
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRreXdzdHZvcWJxcm11ZXJmYW9pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAyMDI2MDMsImV4cCI6MjA4NTc3ODYwM30.dK3U48FFCP-yiT0AWbxYfM8TLGzFl5qHXh2Q3_jvmQs'
+        const supabaseUrl = 'https://ynznnuogfedbvxoojcdp.supabase.co'
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inluem5udW9nZmVkYnZ4b29qY2RwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxNTA0MTcsImV4cCI6MjA4NTcyNjQxN30._RhkU6Fg-VR0eMFDYTF-LVnLgqRDuuFOr0xhsACSczs'
 
         const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey)
 
@@ -228,8 +228,8 @@
         .attributes {
             display: grid;
             grid-template-columns: repeat(3, 1fr); /* 3 colunas para mais espaço */
-            gap: 55px;
-            width: 70%;
+            gap: 20px;
+            width: 100%;
         }
         .attr {
             display: flex;
@@ -534,7 +534,7 @@
                 padding: 20px;
             }
         }
-        /* Responsividade para celulares - Layout com Abas */
+        /* Responsividade para celulares */
         @media (max-width: 768px) {
             body {
                 padding: 10px;
@@ -548,184 +548,8 @@
                 gap: 15px;
             }
             .main-content {
-                display: none; /* Esconde o grid padrão */
-            }
-            .sidebar {
-                display: none; /* Esconde sidebar */
-            }
-            .tabs {
-                display: flex;
-                justify-content: space-around;
-                background: rgba(26, 26, 26, 0.95);
-                border-radius: 15px;
-                padding: 10px;
-                margin-bottom: 20px;
-                border: 1px solid #333;
-            }
-            .tab-button {
-                background: none;
-                border: none;
-                color: #fff;
-                padding: 10px 15px;
-                cursor: pointer;
-                border-radius: 8px;
-                transition: background 0.3s;
-                font-size: 14px;
-            }
-            .tab-button.active {
-                background: #4CAF50;
-            }
-            .tab-content {
-                display: none;
-            }
-            .tab-content.active {
-                display: block;
-            }
-            .mobile-section {
-                background: rgba(26, 26, 26, 0.95);
-                border-radius: 15px;
-                padding: 20px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-                border: 1px solid #333;
-                margin-bottom: 15px;
-            }
-            .mobile-section h2 {
-                font-size: 1.1em;
-                margin-bottom: 15px;
-            }
-            .attributes-mobile {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 15px;
-            }
-            .attr-mobile {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                background: #1a1a1a;
-                padding: 15px;
-                border-radius: 10px;
-                border: 1px solid #333;
+                grid-template-columns: 1fr;
                 gap: 10px;
-            }
-            .attr-mobile input {
-                width: 100%;
-                text-align: center;
-            }
-            .attr-mobile .tick {
-                font-size: 18px;
-                cursor: pointer;
-                min-width: 40px;
-                min-height: 40px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border-radius: 8px;
-                background: rgba(255, 255, 255, 0.1);
-            }
-            .attr-mobile .tick.active {
-                color: #4CAF50;
-                background: rgba(76, 175, 80, 0.2);
-            }
-            .tracker-mobile {
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 8px;
-                margin-bottom: 15px;
-            }
-            .icon-mobile {
-                font-size: 28px;
-                cursor: pointer;
-                opacity: 0.5;
-                filter: grayscale(100%);
-                min-width: 40px;
-                min-height: 40px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border-radius: 8px;
-                background: rgba(255, 255, 255, 0.1);
-            }
-            .icon-mobile.active {
-                opacity: 1;
-                filter: none;
-                transform: scale(1.1);
-                background: rgba(76, 175, 80, 0.2);
-            }
-            .notes-mobile {
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-            }
-            .note-mobile {
-                background: #2a2a2a;
-                padding: 12px;
-                border-radius: 10px;
-                position: relative;
-                min-height: 50px;
-            }
-            .note-mobile textarea {
-                width: 100%;
-                height: 100%;
-                border: none;
-                background: transparent;
-                color: #fff;
-                resize: vertical;
-                font-size: 14px;
-            }
-            .note-mobile .delete {
-                position: absolute;
-                top: 5px;
-                right: 5px;
-                cursor: pointer;
-                color: #ff6b6b;
-                min-width: 40px;
-                min-height: 40px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border-radius: 8px;
-                background: rgba(255, 0, 0, 0.1);
-            }
-            .inventory-mobile, .skills-mobile {
-                background: rgba(26, 26, 26, 0.95);
-                border-radius: 15px;
-                padding: 20px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-                border: 1px solid #333;
-            }
-            .inventory-mobile ul, .skills-mobile ul {
-                list-style: none;
-                padding: 0;
-                margin: 0;
-            }
-            .inventory-mobile li, .skills-mobile li {
-                background: #2a2a2a;
-                margin-bottom: 10px;
-                padding: 10px;
-                border-radius: 8px;
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-            }
-            .inventory-mobile li input, .skills-mobile li input {
-                width: 100%;
-            }
-            .add-item-mobile {
-                background: #2196F3;
-                color: white;
-                border: none;
-                padding: 10px 15px;
-                border-radius: 8px;
-                cursor: pointer;
-                margin-top: 15px;
-                font-size: 14px;
-                transition: background 0.3s;
-                align-self: center;
-            }
-            .add-item-mobile:hover {
-                background: #1976D2;
             }
             .section {
                 padding: 15px;
@@ -854,50 +678,6 @@
                 padding: 8px 12px;
                 font-size: 14px;
             }
-            .tabs {
-                padding: 8px;
-            }
-            .tab-button {
-                padding: 8px 12px;
-                font-size: 12px;
-            }
-            .mobile-section {
-                padding: 15px;
-            }
-            .attributes-mobile {
-                gap: 10px;
-            }
-            .attr-mobile {
-                padding: 12px;
-            }
-            .tracker-mobile {
-                gap: 6px;
-            }
-            .icon-mobile {
-                font-size: 24px;
-                min-width: 36px;
-                min-height: 36px;
-            }
-            .notes-mobile {
-                gap: 8px;
-            }
-            .note-mobile {
-                padding: 10px;
-            }
-            .note-mobile .delete {
-                min-width: 36px;
-                min-height: 36px;
-            }
-            .inventory-mobile, .skills-mobile {
-                padding: 15px;
-            }
-            .inventory-mobile li, .skills-mobile li {
-                padding: 8px;
-            }
-            .add-item-mobile {
-                padding: 8px 12px;
-                font-size: 12px;
-            }
         }
     </style>
 </head>
@@ -928,7 +708,6 @@
             <button onclick="createFicha()" style="background: #4CAF50; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 16px; transition: background 0.3s; align-self: center;">Criar Nova Ficha</button>
         </div>
         <div class="container" id="fichaContainer" style="display: none;">
-            <!-- Layout Desktop -->
             <div class="main-content">
                 <!-- Attributes -->
                 <div class="section attributes-section">
@@ -1032,108 +811,6 @@
                         <li>Habilidade 1 <input type="text" placeholder="Descrição" onchange="saveFicha();"><button onclick="removeItem(this); saveFicha();">Remover</button></li>
                     </ul>
                     <button class="add-item" onclick="addItem('skills'); saveFicha();">Adicionar Habilidade</button>
-                </div>
-            </div>
-
-            <!-- Layout Mobile com Abas -->
-            <div class="tabs" id="tabs" style="display: none;">
-                <button class="tab-button active" onclick="showTab('attributes')">Atributos</button>
-                <button class="tab-button" onclick="showTab('trackers')">Trackers</button>
-                <button class="tab-button" onclick="showTab('notes')">Anotações</button>
-                <button class="tab-button" onclick="showTab('inventory')">Inventário</button>
-                <button class="tab-button" onclick="showTab('skills')">Habilidades</button>
-            </div>
-
-            <div class="tab-content active" id="attributes">
-                <div class="mobile-section">
-                    <h2><i class="fas fa-chart-line"></i> Atributos</h2>
-                    <div class="attributes-mobile">
-                        <div class="attr-mobile">Agilidade <input type="number" min="-1" value="0" onchange="updateRadar(); saveFicha();"> <span class="tick" onclick="toggleTick(this); saveFicha();">✓</span></div>
-                        <div class="attr-mobile">Força <input type="number" min="-1" value="0" onchange="updateRadar(); saveFicha();"> <span class="tick" onclick="toggleTick(this); saveFicha();">✓</span></div>
-                        <div class="attr-mobile">Finesse <input type="number" min="-1" value="0" onchange="updateRadar(); saveFicha();"> <span class="tick" onclick="toggleTick(this); saveFicha();">✓</span></div>
-                        <div class="attr-mobile">Instinto <input type="number" min="-1" value="0" onchange="updateRadar(); saveFicha();"> <span class="tick" onclick="toggleTick(this); saveFicha();">✓</span></div>
-                        <div class="attr-mobile">Presença <input type="number" min="-1" value="0" onchange="updateRadar(); saveFicha();"> <span class="tick" onclick="toggleTick(this); saveFicha();">✓</span></div>
-                        <div class="attr-mobile">Conhecimento <input type="number" min="-1" value="0" onchange="updateRadar(); saveFicha();"> <span class="tick" onclick="toggleTick(this); saveFicha();">✓</span></div>
-                    </div>
-                    <div class="radar-chart">
-                        <canvas id="radarChartMobile"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <div class="tab-content" id="trackers">
-                <div class="mobile-section">
-                    <h2><i class="fas fa-heart"></i> Pontos de Vida (PV)</h2>
-                    <div class="tracker-mobile" id="pv-mobile"></div>
-                    <input type="number" min="1" value="5" onchange="setTracker('pv-mobile', this.value, '❤️'); saveFicha();">
-                </div>
-                <div class="mobile-section">
-                    <h2><i class="fas fa-bolt"></i> Pontos de Força (PF - Estresse)</h2>
-                    <div class="tracker-mobile" id="pf-mobile"></div>
-                    <input type="number" min="1" value="5" onchange="setTracker('pf-mobile', this.value, '⚡'); saveFicha();">
-                </div>
-                <div class="mobile-section">
-                    <h2><i class="fas fa-star"></i> Esperança</h2>
-                    <div class="tracker-mobile" id="hope-mobile"></div>
-                    <input type="number" min="1" value="6" onchange="setTracker('hope-mobile', this.value, '✨'); saveFicha();">
-                </div>
-                <div class="mobile-section">
-                    <h2><i class="fas fa-shield-alt"></i> Armadura</h2>
-                    <input type="text" placeholder="Ex: 2 / Leve" onchange="saveFicha();">
-                </div>
-                <div class="mobile-section">
-                    <h2><i class="fas fa-shield-alt"></i> Slots de Armadura</h2>
-                    <div class="tracker-mobile" id="slots-mobile"></div>
-                    <input type="number" min="1" value="1" onchange="setTracker('slots-mobile', this.value, '🛡️'); saveFicha();">
-                </div>
-                <div class="mobile-section">
-                    <h2><i class="fas fa-star"></i> Proficiência</h2>
-                    <div class="tracker-mobile" id="proficiency-mobile"></div>
-                    <input type="number" min="0" max="6" value="0" onchange="setTracker('proficiency-mobile', this.value, '⭐'); saveFicha();">
-                </div>
-                <div class="mobile-section">
-                    <h2><i class="fas fa-coins"></i> Ouro</h2>
-                    <div class="tracker-mobile" id="punhados-mobile"></div>
-                    <div class="tracker-mobile" id="bolsas-mobile"></div>
-                    <div class="tracker-mobile" id="cofres-mobile"></div>
-                </div>
-                <div class="mobile-section">
-                    <h2><i class="fas fa-user-circle"></i> Imagem do Personagem</h2>
-                    <input type="file" accept="image/*" onchange="loadImage(event); saveFicha();">
-                    <img id="charImageMobile" src="" alt="Imagem do Personagem" style="display: none;">
-                </div>
-            </div>
-
-            <div class="tab-content" id="notes">
-                <div class="mobile-section">
-                    <h2><i class="fas fa-sticky-note"></i> Anotações</h2>
-                    <div class="notes-mobile" id="notes-mobile">
-                        <div class="note-mobile">
-                            <textarea placeholder="Digite suas anotações aqui..." onchange="saveFicha();"></textarea>
-                            <i class="fas fa-times delete" onclick="deleteNote(this); saveFicha();"></i>
-                        </div>
-                    </div>
-                    <button class="add-note" onclick="addNoteMobile(); saveFicha();">Adicionar Nota</button>
-                </div>
-            </div>
-
-            <div class="tab-content" id="inventory">
-                <div class="mobile-section inventory-mobile">
-                    <h2><i class="fas fa-backpack"></i> Inventário</h2>
-                    <ul id="inventoryList-mobile">
-                        <li>Item 1 <input type="text" placeholder="Descrição" onchange="saveFicha();"><button onclick="removeItem(this); saveFicha();">Remover</button></li>
-                    </ul>
-                    <button class="add-item-mobile" onclick="addItem('inventory-mobile'); saveFicha();">Adicionar Item</button>
-                </div>
-            </div>
-
-            <div class="tab-content" id="skills">
-                <div class="mobile-section skills-mobile">
-                    <h2><i class="fas fa-magic"></i> Habilidades</h2>
-                    <ul id="skillsList-mobile">
-                        <li>Habilidade 1 <input type="text" placeholder="Descrição" onchange="saveFicha();"><button onclick="removeItem(this); saveFicha();">Remover</button></li>
-                    </ul>
-                    <button class="add-item-mobile" onclick="addItem('skills-mobile'); saveFicha();">Adicionar Habilidade</button>
                 </div>
             </div>
         </div>
@@ -1273,7 +950,7 @@
         function loadFichaById(ficha) {
             currentFichaId = ficha.id;
             const data = ficha.data;
-            // Carregar dados na ficha desktop
+            // Carregar dados na ficha
             setTracker('pv', data.pv, '❤️', data.activeIcons.pv);
             setTracker('pf', data.pf, '⚡', data.activeIcons.pf);
             setTracker('hope', data.hope, '✨', data.activeIcons.hope);
@@ -1282,7 +959,7 @@
             setTracker('punhados', data.punhados, '🪙', data.activeIcons.punhados);
             setTracker('bolsas', data.bolsas, '💰', data.activeIcons.bolsas);
             setTracker('cofres', data.cofres, '🏦', data.activeIcons.cofres);
-            document.querySelector('.section:nth-child(2) input').value = data.armor;
+            document.querySelector('.section:nth-child(2) input').value = data.armor; // Ajustado para a nova posição
             const attrInputs = document.querySelectorAll('.attr input');
             data.attributes.forEach((val, i) => attrInputs[i].value = val);
             const ticks = document.querySelectorAll('.tick');
@@ -1325,79 +1002,8 @@
             } else {
                 document.getElementById('charImage').style.display = 'none';
             }
-            // Carregar dados na ficha mobile
-            setTracker('pv-mobile', data.pv, '❤️', data.activeIcons.pv);
-            setTracker('pf-mobile', data.pf, '⚡', data.activeIcons.pf);
-            setTracker('hope-mobile', data.hope, '✨', data.activeIcons.hope);
-            setTracker('slots-mobile', data.slots, '🛡️', data.activeIcons.slots);
-            setTracker('proficiency-mobile', data.proficiency, '⭐', data.activeIcons.proficiency);
-            setTracker('punhados-mobile', data.punhados, '🪙', data.activeIcons.punhados);
-            setTracker('bolsas-mobile', data.bolsas, '💰', data.activeIcons.bolsas);
-            setTracker('cofres-mobile', data.cofres, '🏦', data.activeIcons.cofres);
-            const attrInputsMobile = document.querySelectorAll('.attr-mobile input');
-            data.attributes.forEach((val, i) => attrInputsMobile[i].value = val);
-            const ticksMobile = document.querySelectorAll('.attr-mobile .tick');
-            data.ticks.forEach((active, i) => {
-                if (active) ticksMobile[i].classList.add('active');
-                else ticksMobile[i].classList.remove('active');
-            });
-            updateRadarMobile();
-            const notesDivMobile = document.getElementById('notes-mobile');
-            notesDivMobile.innerHTML = '';
-            data.notes.forEach(note => {
-                const noteDiv = document.createElement('div');
-                noteDiv.className = 'note-mobile';
-                noteDiv.innerHTML = `<textarea onchange="saveFicha();">${note}</textarea><i class="fas fa-times delete" onclick="deleteNote(this); saveFicha();"></i>`;
-                notesDivMobile.appendChild(noteDiv);
-            });
-            const inventoryListMobile = document.getElementById('inventoryList-mobile');
-            inventoryListMobile.innerHTML = '';
-            data.inventory.forEach(item => {
-                const parts = item.split(' - ');
-                const name = parts[0] || 'Novo Item';
-                const desc = parts[1] || '';
-                const li = document.createElement('li');
-                li.innerHTML = `${name} <input type="text" placeholder="Descrição" value="${desc}" onchange="saveFicha();"><button onclick="removeItem(this); saveFicha();">Remover</button>`;
-                inventoryListMobile.appendChild(li);
-            });
-            const skillsListMobile = document.getElementById('skillsList-mobile');
-            skillsListMobile.innerHTML = '';
-            data.skills.forEach(skill => {
-                const parts = skill.split(' - ');
-                const name = parts[0] || 'Nova Habilidade';
-                const desc = parts[1] || '';
-                const li = document.createElement('li');
-                li.innerHTML = `${name} <input type="text" placeholder="Descrição" value="${desc}" onchange="saveFicha();"><button onclick="removeItem(this); saveFicha();">Remover</button>`;
-                skillsListMobile.appendChild(li);
-            });
-            if (data.image) {
-                document.getElementById('charImageMobile').src = data.image;
-                document.getElementById('charImageMobile').style.display = 'block';
-            } else {
-                document.getElementById('charImageMobile').style.display = 'none';
-            }
-            document.getElementById('fichaContainer').style.display = 'block';
+            document.getElementById('fichaContainer').style.display = 'grid';
             document.getElementById('pranchetaBtn').style.display = 'block';
-            // Mostrar tabs em mobile
-            if (window.innerWidth <= 768) {
-                document.getElementById('tabs').style.display = 'flex';
-            }
-        }
-
-        async function deleteFicha(id) {
-            const { error } = await supabaseClient
-                .from('sheets')
-                .delete()
-                .eq('id', id);
-            if (error) console.error(error);
-            loadFichas();
-            if (currentFichaId === id) {
-                document.getElementById('fichaContainer').style.display = 'none';
-            document.getElementById('pranchetaBtn').style.display = 'block';
-            // Mostrar tabs em mobile
-            if (window.innerWidth <= 768) {
-                document.getElementById('tabs').style.display = 'flex';
-            }
         }
 
         async function deleteFicha(id) {
@@ -1410,7 +1016,6 @@
             if (currentFichaId === id) {
                 document.getElementById('fichaContainer').style.display = 'none';
                 document.getElementById('pranchetaBtn').style.display = 'none';
-                document.getElementById('tabs').style.display = 'none';
                 currentFichaId = null;
             }
         }
@@ -1426,7 +1031,7 @@
                 punhados: parseInt(document.querySelector('#punhados').children.length),
                 bolsas: parseInt(document.querySelector('#bolsas').children.length),
                 cofres: parseInt(document.querySelector('#cofres').children.length),
-                armor: document.querySelector('.section:nth-child(2) input').value,
+                armor: document.querySelector('.section:nth-child(2) input').value, // Ajustado para a nova posição
                 attributes: Array.from(document.querySelectorAll('.attr input')).map(input => parseInt(input.value) || 0),
                 ticks: Array.from(document.querySelectorAll('.tick')).map(tick => tick.classList.contains('active')),
                 notes: Array.from(document.querySelectorAll('#notes textarea')).map(textarea => textarea.value),
@@ -1461,7 +1066,7 @@
             el.innerHTML = '';
             for (let i = 0; i < amount; i++) {
                 const span = document.createElement('span');
-                span.className = id.includes('mobile') ? 'icon-mobile' : 'icon';
+                span.className = 'icon';
                 if (activeStates[i]) span.classList.add('active');
                 span.innerText = icon;
                 span.onclick = () => {
@@ -1481,7 +1086,7 @@
             el.classList.toggle('active');
         }
 
-        // Gráfico de Radar Desktop
+        // Gráfico de Radar
         const ctx = document.getElementById('radarChart').getContext('2d');
         const radarChart = new Chart(ctx, {
             type: 'radar',
@@ -1524,62 +1129,11 @@
             radarChart.update();
         }
 
-        // Gráfico de Radar Mobile
-        const ctxMobile = document.getElementById('radarChartMobile').getContext('2d');
-        const radarChartMobile = new Chart(ctxMobile, {
-            type: 'radar',
-            data: {
-                labels: ['Agilidade', 'Força', 'Finesse', 'Instinto', 'Presença', 'Conhecimento'],
-                datasets: [{
-                    label: 'Atributos',
-                    data: [0, 0, 0, 0, 0, 0],
-                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 2,
-                    pointBackgroundColor: 'rgba(54, 162, 235, 1)',
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    r: {
-                        beginAtZero: true,
-                        min: -1,
-                        max: 10,
-                        ticks: {
-                            stepSize: 1
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                }
-            }
-        });
-
-        function updateRadarMobile() {
-            const attrs = document.querySelectorAll('.attr-mobile input');
-            const data = Array.from(attrs).map(input => parseInt(input.value) || 0);
-            radarChartMobile.data.datasets[0].data = data;
-            radarChartMobile.update();
-        }
-
         // Anotações (Post-its)
         function addNote() {
             const notes = document.getElementById('notes');
             const note = document.createElement('div');
             note.className = 'note';
-            note.innerHTML = '<textarea placeholder="Digite suas anotações aqui..." onchange="saveFicha();"></textarea><i class="fas fa-times delete" onclick="deleteNote(this); saveFicha();"></i>';
-            notes.appendChild(note);
-        }
-
-        function addNoteMobile() {
-            const notes = document.getElementById('notes-mobile');
-            const note = document.createElement('div');
-            note.className = 'note-mobile';
             note.innerHTML = '<textarea placeholder="Digite suas anotações aqui..." onchange="saveFicha();"></textarea><i class="fas fa-times delete" onclick="deleteNote(this); saveFicha();"></i>';
             notes.appendChild(note);
         }
@@ -1595,11 +1149,8 @@
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const img = document.getElementById('charImage');
-                    const imgMobile = document.getElementById('charImageMobile');
                     img.src = e.target.result;
-                    imgMobile.src = e.target.result;
                     img.style.display = 'block';
-                    imgMobile.style.display = 'block';
                 };
                 reader.readAsDataURL(file);
             }
@@ -1616,31 +1167,6 @@
         function removeItem(el) {
             el.parentElement.remove();
         }
-
-        // Função para mostrar abas no mobile
-        function showTab(tabId) {
-            const tabs = document.querySelectorAll('.tab-content');
-            tabs.forEach(tab => tab.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            const buttons = document.querySelectorAll('.tab-button');
-            buttons.forEach(button => button.classList.remove('active'));
-            event.target.classList.add('active');
-        }
-
-        // Ajustar layout ao redimensionar
-        window.addEventListener('resize', () => {
-            if (window.innerWidth <= 768) {
-                document.getElementById('tabs').style.display = 'flex';
-                document.querySelector('.main-content').style.display = 'none';
-                document.querySelector('.sidebar').style.display = 'none';
-            } else {
-                document.getElementById('tabs').style.display = 'none';
-                document.querySelector('.main-content').style.display = 'grid';
-                document.querySelector('.sidebar').style.display = 'flex';
-            }
-        });
     </script>
 </body>
 </html>
-
-
