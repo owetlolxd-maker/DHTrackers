@@ -1110,14 +1110,17 @@
                     const notes = inputs[4].value.trim();
                     return `${name} - ${type} - ${damage} - ${range} - ${notes}`;
                 }),
+                // Dentro da função saveFicha(), substitua as linhas de inventory e skills por:
                 inventory: Array.from(document.querySelectorAll('#inventoryList li')).map(li => {
-                    const name = li.firstChild.textContent.trim();
-                    const desc = li.querySelector('input').value.trim();
+                    const inputs = li.querySelectorAll('input');
+                    const name = inputs[0].value.trim();  // Primeiro input: Nome
+                    const desc = inputs[1].value.trim();  // Segundo input: Observações
                     return desc ? `${name} - ${desc}` : name;
                 }),
                 skills: Array.from(document.querySelectorAll('#skillsList li')).map(li => {
-                    const name = li.firstChild.textContent.trim();
-                    const desc = li.querySelector('input').value.trim();
+                    const inputs = li.querySelectorAll('input');
+                    const name = inputs[0].value.trim();  // Primeiro input: Nome
+                    const desc = inputs[1].value.trim();  // Segundo input: Observações
                     return desc ? `${name} - ${desc}` : name;
                 }),
                 image: document.getElementById('charImage').src,
@@ -1263,3 +1266,4 @@
     </script>
 </body>
 </html>
+
