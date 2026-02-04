@@ -7,81 +7,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        const supabaseUrl = 'https://ynznnuogfedbvxoojcdp.supabase.co'
-        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inluem5udW9nZmVkYnZ4b29qY2RwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxNTA0MTcsImV4cCI6MjA4NTcyNjQxN30._RhkU6Fg-VR0eMFDYTF-LVnLgqRDuuFOr0xhsACSczs'
-
-        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey)
-
-        async function signUp(email, password) {
-            const { error } = await supabaseClient.auth.signUp({ email, password })
-            if (error) {
-                alert(error.message)
-            } else {
-                alert('Conta criada! Verifique o email.')
-            }
-        }
-
-        async function signIn(email, password) {
-            const { error } = await supabaseClient.auth.signInWithPassword({
-                email,
-                password
-            })
-            if (error) alert(error.message)
-        }
-
-        async function logout() {
-            await saveFicha(); // Salvar ficha atual antes de sair
-            await supabaseClient.auth.signOut()
-            location.reload()
-        }
-
-        async function getUser() {
-            const { data } = await supabaseClient.auth.getUser()
-            return data.user
-        }
-
-        async function saveSheet(sheetName, trackersData) {
-            const user = await getUser()
-            if (!user) return alert('Faça login primeiro')
-
-            const { error } = await supabaseClient
-                .from('sheets')
-                .insert({
-                    user_id: user.id,
-                    name: sheetName,
-                    data: trackersData
-                })
-
-            if (error) {
-                console.error(error)
-                alert('Erro ao salvar ficha')
-            }
-        }
-
-        async function updateSheet(sheetId, trackersData) {
-            const { error } = await supabaseClient
-                .from('sheets')
-                .update({ data: trackersData })
-                .eq('id', sheetId)
-
-            if (error) console.error(error)
-        }
-
-        async function loadSheets() {
-            const { data, error } = await supabaseClient
-                .from('sheets')
-                .select('*')
-                .order('created_at', { ascending: false })
-
-            if (error) {
-                console.error(error)
-                return []
-            }
-
-            return data
-        }
-    </script>
     <style>
         body {
             background: linear-gradient(135deg, #0f0f0f, #1a1a1a);
@@ -606,6 +531,8 @@
                 font-size: 12px;
             }
             .logout, .prancheta-btn {
+                top: 15px;
+                right: 15px;
                 padding: 8px 12px;
                 font-size: 14px;
             }
@@ -676,15 +603,94 @@
                 padding: 6px 10px;
                 font-size: 12px;
             }
-            .radar-chart canvas {
-                height: 200px !important;
-            }
             .search-ficha input {
                 max-width: 100%;
             }
             .search-ficha button {
                 padding: 8px 12px;
                 font-size: 14px;
+            }
+        }
+        /* Estilos para a nova tabela de progressão */
+        .progression-table {
+            background: rgba(26, 26, 26, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            border: 1px solid #333;
+            margin-top: 30px;
+            width: 100%;
+            max-width: 1400px;
+            margin: 30px auto 0;
+        }
+        .progression-table h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+        .progression-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        .tier-column {
+            background: #2a2a2a;
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid #555;
+        }
+        .tier-title {
+            background: #1a1a1a;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 15px;
+        }
+        .tier-explanation {
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #ccc;
+        }
+        .tier-instruction {
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #bbb;
+            font-weight: bold;
+        }
+        .tier-options {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .tier-options li {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .tier-options input[type="checkbox"] {
+            margin-top: 2px;
+        }
+        .tier-options .double-checkbox {
+            display: flex;
+            gap: 5px;
+        }
+        .tier-options .double-checkbox input[type="checkbox"] {
+            margin: 0;
+        }
+        .tier-final-text {
+            margin-top: 15px;
+            font-size: 14px;
+            color: #ccc;
+            font-style: italic;
+        }
+        /* Responsividade para a tabela */
+        @media (max-width: 1024px) {
+            .progression-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
             }
         }
     </style>
@@ -703,7 +709,7 @@
 
     <div class="dashboard" id="dashboard">
         <button class="logout" onclick="logout()">Logout</button>
-        <button class="prancheta-btn" id="pranchetaBtn" onclick="openPrancheta()">🃏 Prancheta de Cartas</button>
+        <button class="prancheta-btn" id="pranchetaBtn" onclick="openPrancheta()" style="display: none;">🃏 Prancheta de Cartas</button>
         <div class="search-ficha">
             <h2>Buscar Ficha por ID</h2>
             <input type="text" id="searchId" placeholder="Digite o ID da ficha">
@@ -826,7 +832,11 @@
                 <div class="section inventory">
                     <h2><i class="fas fa-backpack"></i> Inventário</h2>
                     <ul id="inventoryList">
-                        <li>Item 1 <input type="text" placeholder="Descrição" onchange="saveFicha();"><button onclick="removeItem(this); saveFicha();">Remover</button></li>
+                        <li>
+                            <input type="text" placeholder="Nome do Item" onchange="saveFicha();">
+                            <input type="text" placeholder="Observações" onchange="saveFicha();">
+                            <button onclick="removeItem(this); saveFicha();">Remover</button>
+                        </li>
                     </ul>
                     <button class="add-item" onclick="addItem('inventory'); saveFicha();">Adicionar Item</button>
                 </div>
@@ -835,15 +845,211 @@
                 <div class="section skills">
                     <h2><i class="fas fa-magic"></i> Habilidades</h2>
                     <ul id="skillsList">
-                        <li>Habilidade 1 <input type="text" placeholder="Descrição" onchange="saveFicha();"><button onclick="removeItem(this); saveFicha();">Remover</button></li>
+                        <li>
+                            <input type="text" placeholder="Nome da Skill" onchange="saveFicha();">
+                            <input type="text" placeholder="Observações" onchange="saveFicha();">
+                            <button onclick="removeItem(this); saveFicha();">Remover</button>
+                        </li>
                     </ul>
                     <button class="add-item" onclick="addItem('skills'); saveFicha();">Adicionar Habilidade</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nova Seção: Tabela de Progressão -->
+        <div class="progression-table" id="progressionTable" style="display: none;">
+            <h2><i class="fas fa-level-up-alt"></i> Progressão de Níveis</h2>
+            <div class="progression-grid">
+                <!-- Coluna 1: 2º Patamar -->
+                <div class="tier-column">
+                    <div class="tier-title">2º PATAMAR: NÍVEIS 2 A 4</div>
+                    <div class="tier-explanation">No nível 2, crie uma nova Experiência com +2 e aumente sua Proficiência em +1.</div>
+                    <div class="tier-instruction">Escolha duas opções da lista abaixo e as marque.</div>
+                    <ul class="tier-options">
+                        <li>
+                        <input type="checkbox" onchange="saveFicha();">
+                        <input type="checkbox" onchange="saveFicha();">
+                        <input type="checkbox" onchange="saveFicha();">
+                        Escolha dois atributos desmarcados, os marque e receba um bônus de +1 em cada.
+                        </li>
+                        <li>
+                        <input type="checkbox" onchange="saveFicha();">
+                        <input type="checkbox" onchange="saveFicha();">
+                        Aumente seus PV em 1 permanentemente.
+                        </li>
+
+                        <li>
+                        <input type="checkbox" onchange="saveFicha();">
+                        <input type="checkbox" onchange="saveFicha();">
+                        Aumente seus PF em 1 permanentemente.
+                        </li>
+                        <li><input type="checkbox" onchange="saveFicha();"> Receba +1 em duas Experiências permanentemente.</li>
+                        <li><input type="checkbox" onchange="saveFicha();"> Escolha uma nova carta de domínio de um domínio ao qual você tem acesso e de um nível igual ou menor que o seu (nível máx.: 4).</li>
+                        <li><input type="checkbox" onchange="saveFicha();"> Aumente sua Evasão em +1 permanentemente.</li>
+                    </ul>
+                    <div class="tier-final-text">Atualize seu nível e ajuste seus limiares de dano de acordo. Escolha uma nova carta de domínio de nível igual ou inferior ao seu e que pertença a um domínio ao qual você tem acesso.</div>
+                </div>
+
+                <!-- Coluna 2: 3º Patamar -->
+                <div class="tier-column">
+                    <div class="tier-title">3º PATAMAR: NÍVEIS 5 A 7</div>
+                    <div class="tier-explanation">No nível 5, crie uma nova Experiência com +2 e remova todas as marcações nos atributos. Então, aumente sua Proficiência em +1.</div>
+                    <div class="tier-instruction">Escolha duas opções da lista abaixo, ou qualquer opção do patamar anterior, e as marque.</div>
+                    <ul class="tier-options">
+                        <li>
+                        <input type="checkbox" onchange="saveFicha();">
+                        <input type="checkbox" onchange="saveFicha();">
+                        <input type="checkbox" onchange="saveFicha();">
+                        Escolha dois atributos desmarcados, os marque e receba um bônus de +1 em cada.
+                        </li>
+                        <li>
+                        <input type="checkbox" onchange="saveFicha();">
+                        <input type="checkbox" onchange="saveFicha();">
+                        Aumente seus PV em 1 permanentemente.
+                        </li>
+
+                        <li>
+                        <input type="checkbox" onchange="saveFicha();">
+                        <input type="checkbox" onchange="saveFicha();">
+                        Aumente seus PF em 1 permanentemente.
+                        </li>
+                        <li><input type="checkbox" onchange="saveFicha();"> Receba +1 em duas Experiências permanentemente.</li>
+                        <li><input type="checkbox" onchange="saveFicha();"> Escolha uma nova carta de domínio de um domínio ao qual você tem acesso e de um nível igual ou menor que o seu (nível máx.: 7).</li>
+                        <li><input type="checkbox" onchange="saveFicha();"> Aumente sua Evasão em +1 permanentemente.</li>
+                        <li><input type="checkbox" onchange="saveFicha();"> Pegue sua carta de subclasse aprimorada. Em seguida, corte a opção de multiclasses deste patamar.</li>
+                        <li class="double-checkbox">
+                            <input type="checkbox" onchange="saveFicha();">
+                            <input type="checkbox" onchange="saveFicha();">
+                            Aumente sua Proficiência em +1.
+                        </li>
+                        <li class="double-checkbox">
+                            <input type="checkbox" onchange="saveFicha();">
+                            <input type="checkbox" onchange="saveFicha();">
+                            Multiclasse: escolha uma classe adicional para o seu personagem. Em seguida, corte “Pegue uma carta de subclasse aprimorada” e a outra opção de multiclasse nesta ficha.
+                        </li>
+                    </ul>
+                    <div class="tier-final-text">Atualize seu nível e ajuste seus limiares de dano de acordo. Escolha uma nova carta de domínio de nível igual ou inferior ao seu e que pertença a um domínio ao qual você tem acesso.</div>
+                </div>
+
+                <!-- Coluna 3: 4º Patamar -->
+                <div class="tier-column">
+                    <div class="tier-title">4º PATAMAR: NÍVEIS 8 A 10</div>
+                    <div class="tier-explanation">No nível 8, crie uma nova Experiência com +2 e remova todas as marcações nos atributos. Então, aumente sua Proficiência em +1.</div>
+                    <div class="tier-instruction">Escolha duas opções da lista abaixo, ou qualquer opção do patamar anterior, e as marque.</div>
+                    <ul class="tier-options">
+                        <li>
+                        <input type="checkbox" onchange="saveFicha();">
+                        <input type="checkbox" onchange="saveFicha();">
+                        <input type="checkbox" onchange="saveFicha();">
+                        Escolha dois atributos desmarcados, os marque e receba um bônus de +1 em cada.
+                        </li>
+                        <li>
+                        <input type="checkbox" onchange="saveFicha();">
+                        <input type="checkbox" onchange="saveFicha();">
+                        Aumente seus PV em 1 permanentemente.
+                        </li>
+
+                        <li>
+                        <input type="checkbox" onchange="saveFicha();">
+                        <input type="checkbox" onchange="saveFicha();">
+                        Aumente seus PF em 1 permanentemente.
+                        </li>
+                        <li><input type="checkbox" onchange="saveFicha();"> Receba +1 em duas Experiências permanentemente.</li>
+                        <li><input type="checkbox" onchange="saveFicha();"> Escolha uma nova carta de domínio de um domínio ao qual você tem acesso e de um nível igual ou menor que o seu.</li>
+                        <li><input type="checkbox" onchange="saveFicha();"> Aumente sua Evasão em +1 permanentemente.</li>
+                        <li><input type="checkbox" onchange="saveFicha();"> Pegue sua carta de subclasse aprimorada. Em seguida, corte a opção de multiclasses deste patamar.</li>
+                        <li class="double-checkbox">
+                            <input type="checkbox" onchange="saveFicha();">
+                            <input type="checkbox" onchange="saveFicha();">
+                            Aumente sua Proficiência em +1.
+                        </li>
+                        <li class="double-checkbox">
+                            <input type="checkbox" onchange="saveFicha();">
+                            <input type="checkbox" onchange="saveFicha();">
+                            Multiclasse: escolha uma classe adicional para o seu personagem. Em seguida, corte “Pegue uma carta de subclasse aprimorada” e a outra opção de multiclasse nesta ficha.
+                        </li>
+                    </ul>
+                    <div class="tier-final-text">Atualize seu nível e ajuste seus limiares de dano de acordo. Escolha uma nova carta de domínio de nível igual ou inferior ao seu e que pertença a um domínio ao qual você tem acesso.</div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
+        const supabaseUrl = 'https://ynznnuogfedbvxoojcdp.supabase.co'
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inluem5udW9nZmVkYnZ4b29qY2RwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzAxNTA0MTcsImV4cCI6MjA4NTcyNjQxN30._RhkU6Fg-VR0eMFDYTF-LVnLgqRDuuFOr0xhsACSczs'
+
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey)
+
+        async function signUp(email, password) {
+            const { error } = await supabaseClient.auth.signUp({ email, password })
+            if (error) {
+                alert(error.message)
+            } else {
+                alert('Conta criada! Verifique o email.')
+            }
+        }
+
+        async function signIn(email, password) {
+            const { error } = await supabaseClient.auth.signInWithPassword({
+                email,
+                password
+            })
+            if (error) alert(error.message)
+        }
+
+        async function logout() {
+            await saveFicha(); // Salvar ficha atual antes de sair
+            await supabaseClient.auth.signOut()
+            location.reload()
+        }
+
+        async function getUser() {
+            const { data } = await supabaseClient.auth.getUser()
+            return data.user
+        }
+
+        async function saveSheet(sheetName, trackersData) {
+            const user = await getUser()
+            if (!user) return alert('Faça login primeiro')
+
+            const { error } = await supabaseClient
+                .from('sheets')
+                .insert({
+                    user_id: user.id,
+                    name: sheetName,
+                    data: trackersData
+                })
+
+            if (error) {
+                console.error(error)
+                alert('Erro ao salvar ficha')
+            }
+        }
+
+        async function updateSheet(sheetId, trackersData) {
+            const { error } = await supabaseClient
+                .from('sheets')
+                .update({ data: trackersData })
+                .eq('id', sheetId)
+
+            if (error) console.error(error)
+        }
+
+        async function loadSheets() {
+            const { data, error } = await supabaseClient
+                .from('sheets')
+                .select('*')
+                .order('created_at', { ascending: false })
+
+            if (error) {
+                console.error(error)
+                return []
+            }
+
+            return data
+        }
+
         let currentUser = null;
         let currentFichaId = null;
 
@@ -961,6 +1167,11 @@
                     punhados: Array(10).fill(false),
                     bolsas: Array(10).fill(false),
                     cofres: Array(10).fill(false)
+                },
+                progression: {
+                    tier2: Array(6).fill(false),
+                    tier3: Array(9).fill(false),
+                    tier4: Array(9).fill(false)
                 }
             };
             await saveSheet('Nova Ficha', newFicha);
@@ -987,13 +1198,13 @@
             setTracker('punhados', data.punhados, '🪙', data.activeIcons.punhados);
             setTracker('bolsas', data.bolsas, '💰', data.activeIcons.bolsas);
             setTracker('cofres', data.cofres, '🏦', data.activeIcons.cofres);
-            document.querySelector('.section:nth-child(2) input').value = data.armor; // Ajustado para a nova posição
+            document.querySelector('.section:nth-child(5) input').value = data.armor; // Ajustado para a posição correta
             const attrInputs = document.querySelectorAll('.attr input');
             data.attributes.forEach((val, i) => attrInputs[i].value = val);
             const ticks = document.querySelectorAll('.tick');
             data.ticks.forEach((active, i) => {
                 if (active) ticks[i].classList.add('active');
-                else ticks[i].classList.remove
+                else ticks[i].classList.remove('active');
             });
             updateRadar();
             const notesDiv = document.getElementById('notes');
@@ -1026,41 +1237,52 @@
                 weaponsList.appendChild(li);
             });
             // INVENTÁRIO
-                    const inventoryList = document.getElementById('inventoryList');
-                    inventoryList.innerHTML = '';
+            const inventoryList = document.getElementById('inventoryList');
+            inventoryList.innerHTML = '';
 
-                    data.inventory.forEach(item => {
-                        const parts = item.split(' - ');
-                        const name = parts[0] || '';
-                        const notes = parts[1] || '';
+            data.inventory.forEach(item => {
+                const parts = item.split(' - ');
+                const name = parts[0] || '';
+                const notes = parts[1] || '';
 
-                        const li = document.createElement('li');
-                        li.innerHTML = `
-                            <input type="text" placeholder="Nome do Item" value="${name}" onchange="saveFicha();">
-                            <input type="text" placeholder="Observações" value="${notes}" onchange="saveFicha();">
-                            <button onclick="removeItem(this); saveFicha();">Remover</button>
-                        `;
-                        inventoryList.appendChild(li);
-                    });
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <input type="text" placeholder="Nome do Item" value="${name}" onchange="saveFicha();">
+                    <input type="text" placeholder="Observações" value="${notes}" onchange="saveFicha();">
+                    <button onclick="removeItem(this); saveFicha();">Remover</button>
+                `;
+                inventoryList.appendChild(li);
+            });
 
+            // SKILLS
+            const skillsList = document.getElementById('skillsList');
+            skillsList.innerHTML = '';
 
-                // SKILLS
-                    const skillsList = document.getElementById('skillsList');
-                    skillsList.innerHTML = '';
+            data.skills.forEach(skill => {
+                const parts = skill.split(' - ');
+                const name = parts[0] || '';
+                const notes = parts[1] || '';
 
-                    data.skills.forEach(skill => {
-                        const parts = skill.split(' - ');
-                        const name = parts[0] || '';
-                        const notes = parts[1] || '';
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <input type="text" placeholder="Nome da Skill" value="${name}" onchange="saveFicha();">
+                    <input type="text" placeholder="Observações" value="${notes}" onchange="saveFicha();">
+                    <button onclick="removeItem(this); saveFicha();">Remover</button>
+                `;
+                skillsList.appendChild(li);
+            });
 
-                        const li = document.createElement('li');
-                        li.innerHTML = `
-                            <input type="text" placeholder="Nome da Skill" value="${name}" onchange="saveFicha();">
-                            <input type="text" placeholder="Observações" value="${notes}" onchange="saveFicha();">
-                            <button onclick="removeItem(this); saveFicha();">Remover</button>
-                        `;
-                        skillsList.appendChild(li);
-                    });
+            // PROGRESSÃO
+            if (data.progression) {
+                const tier2Checkboxes = document.querySelectorAll('.tier-column:nth-child(1) .tier-options input[type="checkbox"]');
+                data.progression.tier2.forEach((checked, i) => tier2Checkboxes[i].checked = checked);
+
+                const tier3Checkboxes = document.querySelectorAll('.tier-column:nth-child(2) .tier-options input[type="checkbox"]');
+                data.progression.tier3.forEach((checked, i) => tier3Checkboxes[i].checked = checked);
+
+                const tier4Checkboxes = document.querySelectorAll('.tier-column:nth-child(3) .tier-options input[type="checkbox"]');
+                data.progression.tier4.forEach((checked, i) => tier4Checkboxes[i].checked = checked);
+            }
 
             if (data.image) {
                 document.getElementById('charImage').src = data.image;
@@ -1069,6 +1291,7 @@
                 document.getElementById('charImage').style.display = 'none';
             }
             document.getElementById('fichaContainer').style.display = 'grid';
+            document.getElementById('progressionTable').style.display = 'block';
             document.getElementById('pranchetaBtn').style.display = 'block';
         }
 
@@ -1081,6 +1304,7 @@
             loadFichas();
             if (currentFichaId === id) {
                 document.getElementById('fichaContainer').style.display = 'none';
+                document.getElementById('progressionTable').style.display = 'none';
                 document.getElementById('pranchetaBtn').style.display = 'none';
                 currentFichaId = null;
             }
@@ -1097,7 +1321,7 @@
                 punhados: parseInt(document.querySelector('#punhados').children.length),
                 bolsas: parseInt(document.querySelector('#bolsas').children.length),
                 cofres: parseInt(document.querySelector('#cofres').children.length),
-                armor: document.querySelector('.section:nth-child(2) input').value, // Ajustado para a nova posição
+                armor: document.querySelector('.section:nth-child(5) input').value, // Ajustado para a posição correta
                 attributes: Array.from(document.querySelectorAll('.attr input')).map(input => parseInt(input.value) || 0),
                 ticks: Array.from(document.querySelectorAll('.tick')).map(tick => tick.classList.contains('active')),
                 notes: Array.from(document.querySelectorAll('#notes textarea')).map(textarea => textarea.value),
@@ -1110,18 +1334,17 @@
                     const notes = inputs[4].value.trim();
                     return `${name} - ${type} - ${damage} - ${range} - ${notes}`;
                 }),
-                // Dentro da função saveFicha(), substitua as linhas de inventory e skills por:
                 inventory: Array.from(document.querySelectorAll('#inventoryList li')).map(li => {
                     const inputs = li.querySelectorAll('input');
-                    const name = inputs[0].value.trim();  // Primeiro input: Nome
-                    const desc = inputs[1].value.trim();  // Segundo input: Observações
-                    return desc ? `${name} - ${desc}` : name;
+                    const name = inputs[0].value.trim();
+                    const notes = inputs[1].value.trim();
+                    return notes ? `${name} - ${notes}` : name;
                 }),
                 skills: Array.from(document.querySelectorAll('#skillsList li')).map(li => {
                     const inputs = li.querySelectorAll('input');
-                    const name = inputs[0].value.trim();  // Primeiro input: Nome
-                    const desc = inputs[1].value.trim();  // Segundo input: Observações
-                    return desc ? `${name} - ${desc}` : name;
+                    const name = inputs[0].value.trim();
+                    const notes = inputs[1].value.trim();
+                    return notes ? `${name} - ${notes}` : name;
                 }),
                 image: document.getElementById('charImage').src,
                 activeIcons: {
@@ -1133,6 +1356,11 @@
                     punhados: Array.from(document.querySelectorAll('#punhados .icon')).map(icon => icon.classList.contains('active')),
                     bolsas: Array.from(document.querySelectorAll('#bolsas .icon')).map(icon => icon.classList.contains('active')),
                     cofres: Array.from(document.querySelectorAll('#cofres .icon')).map(icon => icon.classList.contains('active'))
+                },
+                progression: {
+                    tier2: Array.from(document.querySelectorAll('.tier-column:nth-child(1) .tier-options input[type="checkbox"]')).map(cb => cb.checked),
+                    tier3: Array.from(document.querySelectorAll('.tier-column:nth-child(2) .tier-options input[type="checkbox"]')).map(cb => cb.checked),
+                    tier4: Array.from(document.querySelectorAll('.tier-column:nth-child(3) .tier-options input[type="checkbox"]')).map(cb => cb.checked)
                 }
             };
             await updateSheet(currentFichaId, data);
@@ -1266,4 +1494,3 @@
     </script>
 </body>
 </html>
-
