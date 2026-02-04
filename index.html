@@ -142,12 +142,12 @@
         }
         .dashboard {
             display: none;
-            width: 100%;
-            max-width: 1400px;
-            margin: 0 auto;
         }
         .dashboard.show {
             display: block;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
         }
         .container {
             display: grid;
@@ -169,6 +169,10 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+        }
+        .attributes-section {
+            grid-column: span 2; /* Ocupa duas colunas */
+            max-width: none;
         }
         h2 {
             margin-bottom: 20px;
@@ -223,28 +227,28 @@
         }
         .attributes {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+            grid-template-columns: repeat(3, 1fr); /* 3 colunas para mais espaço */
+            gap: 20px;
             width: 100%;
         }
         .attr {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
             background: #1a1a1a;
-            padding: 15px;
+            padding: 20px;
             border-radius: 10px;
             border: 1px solid #333;
             width: 100%;
+            gap: 10px;
         }
         .attr input {
-            width: 70px;
+            width: 80px;
             text-align: center;
         }
         .attr .tick {
             font-size: 24px;
             cursor: pointer;
-            margin-left: 15px;
             transition: color 0.3s;
             min-width: 50px;
             min-height: 50px;
@@ -563,6 +567,10 @@
                 min-width: 40px;
                 min-height: 40px;
             }
+            .attributes {
+                grid-template-columns: repeat(2, 1fr); /* 2 colunas em mobile */
+                gap: 15px;
+            }
             .attr {
                 flex-direction: column;
                 gap: 10px;
@@ -572,20 +580,6 @@
             }
             .attr .tick {
                 font-size: 18px;
-                min-width: 40px;
-                min-height: 40px;
-                align-self: center;
-            }
-            .radar-chart {
-                max-width: 100%;
-            }
-            .notes {
-                gap: 10px;
-            }
-            .note {
-                padding: 12px;
-            }
-            .note .delete {
                 min-width: 40px;
                 min-height: 40px;
             }
@@ -622,7 +616,7 @@
                 max-width: 100%;
             }
             .search-ficha button {
-                padding: 10px 15px;
+                padding: 8px 12px;
                 font-size: 14px;
             }
         }
@@ -682,7 +676,7 @@
             }
             .search-ficha button {
                 padding: 8px 12px;
-                font-size: 12px;
+                font-size: 14px;
             }
         }
     </style>
@@ -715,6 +709,22 @@
         </div>
         <div class="container" id="fichaContainer" style="display: none;">
             <div class="main-content">
+                <!-- Attributes -->
+                <div class="section attributes-section">
+                    <h2><i class="fas fa-chart-line"></i> Atributos</h2>
+                    <div class="attributes">
+                        <div class="attr">Agilidade <input type="number" min="-1" value="0" onchange="updateRadar(); saveFicha();"> <span class="tick" onclick="toggleTick(this); saveFicha();">✓</span></div>
+                        <div class="attr">Força <input type="number" min="-1" value="0" onchange="updateRadar(); saveFicha();"> <span class="tick" onclick="toggleTick(this); saveFicha();">✓</span></div>
+                        <div class="attr">Finesse <input type="number" min="-1" value="0" onchange="updateRadar(); saveFicha();"> <span class="tick" onclick="toggleTick(this); saveFicha();">✓</span></div>
+                        <div class="attr">Instinto <input type="number" min="-1" value="0" onchange="updateRadar(); saveFicha();"> <span class="tick" onclick="toggleTick(this); saveFicha();">✓</span></div>
+                        <div class="attr">Presença <input type="number" min="-1" value="0" onchange="updateRadar(); saveFicha();"> <span class="tick" onclick="toggleTick(this); saveFicha();">✓</span></div>
+                        <div class="attr">Conhecimento <input type="number" min="-1" value="0" onchange="updateRadar(); saveFicha();"> <span class="tick" onclick="toggleTick(this); saveFicha();">✓</span></div>
+                    </div>
+                    <div class="radar-chart">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                </div>
+
                 <!-- PV -->
                 <div class="section">
                     <h2><i class="fas fa-heart"></i> Pontos de Vida (PV)</h2>
@@ -762,22 +772,6 @@
                     <div class="tracker" id="punhados"></div>
                     <div class="tracker" id="bolsas"></div>
                     <div class="tracker" id="cofres"></div>
-                </div>
-
-                <!-- Attributes -->
-                <div class="section">
-                    <h2><i class="fas fa-chart-line"></i> Atributos</h2>
-                    <div class="attributes">
-                        <div class="attr">Agilidade <input type="number" min="-1" value="0" onchange="updateRadar(); saveFicha();"> <span class="tick" onclick="toggleTick(this); saveFicha();">✓</span></div>
-                        <div class="attr">Força <input type="number" min="-1" value="0" onchange="updateRadar(); saveFicha();"> <span class="tick" onclick="toggleTick(this); saveFicha();">✓</span></div>
-                        <div class="attr">Finesse <input type="number" min="-1" value="0" onchange="updateRadar(); saveFicha();"> <span class="tick" onclick="toggleTick(this); saveFicha();">✓</span></div>
-                        <div class="attr">Instinto <input type="number" min="-1" value="0" onchange="updateRadar(); saveFicha();"> <span class="tick" onclick="toggleTick(this); saveFicha();">✓</span></div>
-                        <div class="attr">Presença <input type="number" min="-1" value="0" onchange="updateRadar(); saveFicha();"> <span class="tick" onclick="toggleTick(this); saveFicha();">✓</span></div>
-                        <div class="attr">Conhecimento <input type="number" min="-1" value="0" onchange="updateRadar(); saveFicha();"> <span class="tick" onclick="toggleTick(this); saveFicha();">✓</span></div>
-                    </div>
-                    <div class="radar-chart">
-                        <canvas id="radarChart"></canvas>
-                    </div>
                 </div>
 
                 <!-- Anotações -->
@@ -965,7 +959,7 @@
             setTracker('punhados', data.punhados, '🪙', data.activeIcons.punhados);
             setTracker('bolsas', data.bolsas, '💰', data.activeIcons.bolsas);
             setTracker('cofres', data.cofres, '🏦', data.activeIcons.cofres);
-            document.querySelector('.section:nth-child(4) input').value = data.armor;
+            document.querySelector('.section:nth-child(2) input').value = data.armor; // Ajustado para a nova posição
             const attrInputs = document.querySelectorAll('.attr input');
             data.attributes.forEach((val, i) => attrInputs[i].value = val);
             const ticks = document.querySelectorAll('.tick');
@@ -985,15 +979,21 @@
             const inventoryList = document.getElementById('inventoryList');
             inventoryList.innerHTML = '';
             data.inventory.forEach(item => {
+                const parts = item.split(' - ');
+                const name = parts[0] || 'Novo Item';
+                const desc = parts[1] || '';
                 const li = document.createElement('li');
-                li.innerHTML = `${item} <input type="text" placeholder="Descrição" onchange="saveFicha();"><button onclick="removeItem(this); saveFicha();">Remover</button>`;
+                li.innerHTML = `${name} <input type="text" placeholder="Descrição" value="${desc}" onchange="saveFicha();"><button onclick="removeItem(this); saveFicha();">Remover</button>`;
                 inventoryList.appendChild(li);
             });
             const skillsList = document.getElementById('skillsList');
             skillsList.innerHTML = '';
             data.skills.forEach(skill => {
+                const parts = skill.split(' - ');
+                const name = parts[0] || 'Nova Habilidade';
+                const desc = parts[1] || '';
                 const li = document.createElement('li');
-                li.innerHTML = `${skill} <input type="text" placeholder="Descrição" onchange="saveFicha();"><button onclick="removeItem(this); saveFicha();">Remover</button>`;
+                li.innerHTML = `${name} <input type="text" placeholder="Descrição" value="${desc}" onchange="saveFicha();"><button onclick="removeItem(this); saveFicha();">Remover</button>`;
                 skillsList.appendChild(li);
             });
             if (data.image) {
@@ -1031,12 +1031,20 @@
                 punhados: parseInt(document.querySelector('#punhados').children.length),
                 bolsas: parseInt(document.querySelector('#bolsas').children.length),
                 cofres: parseInt(document.querySelector('#cofres').children.length),
-                armor: document.querySelector('.section:nth-child(4) input').value,
+                armor: document.querySelector('.section:nth-child(2) input').value, // Ajustado para a nova posição
                 attributes: Array.from(document.querySelectorAll('.attr input')).map(input => parseInt(input.value) || 0),
                 ticks: Array.from(document.querySelectorAll('.tick')).map(tick => tick.classList.contains('active')),
                 notes: Array.from(document.querySelectorAll('#notes textarea')).map(textarea => textarea.value),
-                inventory: Array.from(document.querySelectorAll('#inventoryList li')).map(li => li.firstChild.textContent.trim()),
-                skills: Array.from(document.querySelectorAll('#skillsList li')).map(li => li.firstChild.textContent.trim()),
+                inventory: Array.from(document.querySelectorAll('#inventoryList li')).map(li => {
+                    const name = li.firstChild.textContent.trim();
+                    const desc = li.querySelector('input').value.trim();
+                    return desc ? `${name} - ${desc}` : name;
+                }),
+                skills: Array.from(document.querySelectorAll('#skillsList li')).map(li => {
+                    const name = li.firstChild.textContent.trim();
+                    const desc = li.querySelector('input').value.trim();
+                    return desc ? `${name} - ${desc}` : name;
+                }),
                 image: document.getElementById('charImage').src,
                 activeIcons: {
                     pv: Array.from(document.querySelectorAll('#pv .icon')).map(icon => icon.classList.contains('active')),
