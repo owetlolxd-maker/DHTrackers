@@ -210,7 +210,7 @@
             transform: scale(1.1);
             background: rgba(76, 175, 80, 0.2);
         }
-        input[type="number"], input[type="text"], textarea {
+        input[type="number"], input[type="text"], textarea, select {
             background: #2a2a2a;
             border: 1px solid #555;
             color: #fff;
@@ -221,7 +221,7 @@
             width: 100%;
             max-width: 200px;
         }
-        input[type="number"]:focus, input[type="text"]:focus, textarea:focus {
+        input[type="number"]:focus, input[type="text"]:focus, textarea:focus, select:focus {
             outline: none;
             border-color: #777;
         }
@@ -335,19 +335,19 @@
             flex-direction: column;
             gap: 20px;
         }
-        .inventory, .skills {
+        .weapons, .inventory, .skills {
             background: rgba(26, 26, 26, 0.95);
             border-radius: 15px;
             padding: 25px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             border: 1px solid #333;
         }
-        .inventory ul, .skills ul {
+        .weapons ul, .inventory ul, .skills ul {
             list-style: none;
             padding: 0;
             margin: 0;
         }
-        .inventory li, .skills li {
+        .weapons li, .inventory li, .skills li {
             background: #2a2a2a;
             margin-bottom: 10px;
             padding: 12px;
@@ -356,11 +356,11 @@
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
+            gap: 10px;
         }
-        .inventory li input, .skills li input {
+        .weapons li input, .weapons li select, .inventory li input, .skills li input {
             flex-grow: 1;
-            margin-left: 10px;
-            min-width: 150px;
+            min-width: 120px;
         }
         .add-item {
             background: #2196F3;
@@ -513,7 +513,7 @@
             .sidebar {
                 gap: 15px;
             }
-            .inventory, .skills {
+            .weapons, .inventory, .skills {
                 padding: 20px;
             }
             .ficha-list {
@@ -587,12 +587,12 @@
                 padding: 10px 15px;
                 font-size: 14px;
             }
-            .inventory li, .skills li {
+            .weapons li, .inventory li, .skills li {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 10px;
             }
-            .inventory li input, .skills li input {
+            .weapons li input, .weapons li select, .inventory li input, .skills li input {
                 margin-left: 0;
                 width: 100%;
             }
@@ -659,6 +659,14 @@
             .add-note, .add-item {
                 padding: 8px 12px;
                 font-size: 12px;
+            }
+            .weapons li, .inventory li, .skills li {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            .weapons li input, .weapons li select, .inventory li input, .skills li input {
+                width: 100%;
             }
             .ficha-list button {
                 padding: 5px 10px;
@@ -795,6 +803,25 @@
             </div>
 
             <div class="sidebar">
+                <!-- Armas -->
+                <div class="section weapons">
+                    <h2><i class="fas fa-sword"></i> Armas</h2>
+                    <ul id="weaponsList">
+                        <li>
+                            <input type="text" placeholder="Nome da Arma" onchange="saveFicha();">
+                            <select onchange="saveFicha();">
+                                <option value="1 mão">1 mão</option>
+                                <option value="2 mãos">2 mãos</option>
+                            </select>
+                            <input type="text" placeholder="Tipo de Dano" onchange="saveFicha();">
+                            <input type="text" placeholder="Alcance" onchange="saveFicha();">
+                            <input type="text" placeholder="Observações" onchange="saveFicha();">
+                            <button onclick="removeWeapon(this); saveFicha();">Remover</button>
+                        </li>
+                    </ul>
+                    <button class="add-item" onclick="addWeapon(); saveFicha();">Adicionar Arma</button>
+                </div>
+
                 <!-- Inventário -->
                 <div class="section inventory">
                     <h2><i class="fas fa-backpack"></i> Inventário</h2>
@@ -921,6 +948,7 @@
                 attributes: [0, 0, 0, 0, 0, 0],
                 ticks: [false, false, false, false, false, false],
                 notes: [''],
+                weapons: ['Espada - 1 mão - Cortante - Corpo a corpo - Leve'],
                 inventory: ['Item 1'],
                 skills: ['Habilidade 1'],
                 image: '',
@@ -965,7 +993,7 @@
             const ticks = document.querySelectorAll('.tick');
             data.ticks.forEach((active, i) => {
                 if (active) ticks[i].classList.add('active');
-                else ticks[i].classList.remove('active');
+                else ticks[i].classList.remove
             });
             updateRadar();
             const notesDiv = document.getElementById('notes');
@@ -976,26 +1004,64 @@
                 noteDiv.innerHTML = `<textarea onchange="saveFicha();">${note}</textarea><i class="fas fa-times delete" onclick="deleteNote(this); saveFicha();"></i>`;
                 notesDiv.appendChild(noteDiv);
             });
-            const inventoryList = document.getElementById('inventoryList');
-            inventoryList.innerHTML = '';
-            data.inventory.forEach(item => {
-                const parts = item.split(' - ');
-                const name = parts[0] || 'Novo Item';
-                const desc = parts[1] || '';
+            const weaponsList = document.getElementById('weaponsList');
+            weaponsList.innerHTML = '';
+            data.weapons.forEach(weapon => {
+                const parts = weapon.split(' - ');
+                const name = parts[0] || 'Nova Arma';
+                const type = parts[1] || '1 mão';
+                const damage = parts[2] || '';
+                const range = parts[3] || '';
+                const notes = parts[4] || '';
                 const li = document.createElement('li');
-                li.innerHTML = `${name} <input type="text" placeholder="Descrição" value="${desc}" onchange="saveFicha();"><button onclick="removeItem(this); saveFicha();">Remover</button>`;
-                inventoryList.appendChild(li);
+                li.innerHTML = `<input type="text" placeholder="Nome da Arma" value="${name}" onchange="saveFicha();">
+                                <select onchange="saveFicha();">
+                                    <option value="1 mão" ${type === '1 mão' ? 'selected' : ''}>1 mão</option>
+                                    <option value="2 mãos" ${type === '2 mãos' ? 'selected' : ''}>2 mãos</option>
+                                </select>
+                                <input type="text" placeholder="Tipo de Dano" value="${damage}" onchange="saveFicha();">
+                                <input type="text" placeholder="Alcance" value="${range}" onchange="saveFicha();">
+                                <input type="text" placeholder="Observações" value="${notes}" onchange="saveFicha();">
+                                <button onclick="removeWeapon(this); saveFicha();">Remover</button>`;
+                weaponsList.appendChild(li);
             });
-            const skillsList = document.getElementById('skillsList');
-            skillsList.innerHTML = '';
-            data.skills.forEach(skill => {
-                const parts = skill.split(' - ');
-                const name = parts[0] || 'Nova Habilidade';
-                const desc = parts[1] || '';
-                const li = document.createElement('li');
-                li.innerHTML = `${name} <input type="text" placeholder="Descrição" value="${desc}" onchange="saveFicha();"><button onclick="removeItem(this); saveFicha();">Remover</button>`;
-                skillsList.appendChild(li);
-            });
+            // INVENTÁRIO
+                    const inventoryList = document.getElementById('inventoryList');
+                    inventoryList.innerHTML = '';
+
+                    data.inventory.forEach(item => {
+                        const parts = item.split(' - ');
+                        const name = parts[0] || '';
+                        const notes = parts[1] || '';
+
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                            <input type="text" placeholder="Nome do Item" value="${name}" onchange="saveFicha();">
+                            <input type="text" placeholder="Observações" value="${notes}" onchange="saveFicha();">
+                            <button onclick="removeItem(this); saveFicha();">Remover</button>
+                        `;
+                        inventoryList.appendChild(li);
+                    });
+
+
+                // SKILLS
+                    const skillsList = document.getElementById('skillsList');
+                    skillsList.innerHTML = '';
+
+                    data.skills.forEach(skill => {
+                        const parts = skill.split(' - ');
+                        const name = parts[0] || '';
+                        const notes = parts[1] || '';
+
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                            <input type="text" placeholder="Nome da Skill" value="${name}" onchange="saveFicha();">
+                            <input type="text" placeholder="Observações" value="${notes}" onchange="saveFicha();">
+                            <button onclick="removeItem(this); saveFicha();">Remover</button>
+                        `;
+                        skillsList.appendChild(li);
+                    });
+
             if (data.image) {
                 document.getElementById('charImage').src = data.image;
                 document.getElementById('charImage').style.display = 'block';
@@ -1035,6 +1101,15 @@
                 attributes: Array.from(document.querySelectorAll('.attr input')).map(input => parseInt(input.value) || 0),
                 ticks: Array.from(document.querySelectorAll('.tick')).map(tick => tick.classList.contains('active')),
                 notes: Array.from(document.querySelectorAll('#notes textarea')).map(textarea => textarea.value),
+                weapons: Array.from(document.querySelectorAll('#weaponsList li')).map(li => {
+                    const inputs = li.querySelectorAll('input, select');
+                    const name = inputs[0].value.trim();
+                    const type = inputs[1].value.trim();
+                    const damage = inputs[2].value.trim();
+                    const range = inputs[3].value.trim();
+                    const notes = inputs[4].value.trim();
+                    return `${name} - ${type} - ${damage} - ${range} - ${notes}`;
+                }),
                 inventory: Array.from(document.querySelectorAll('#inventoryList li')).map(li => {
                     const name = li.firstChild.textContent.trim();
                     const desc = li.querySelector('input').value.trim();
@@ -1156,11 +1231,29 @@
             }
         }
 
-        // Inventário e Habilidades
+        // Armas
+        function addWeapon() {
+            const list = document.getElementById('weaponsList');
+            const li = document.createElement('li');
+            li.innerHTML = '<input type="text" placeholder="Nome da Arma" onchange="saveFicha();"><select onchange="saveFicha();"><option value="1 mão">1 mão</option><option value="2 mãos">2 mãos</option></select><input type="text" placeholder="Tipo de Dano" onchange="saveFicha();"><input type="text" placeholder="Alcance" onchange="saveFicha();"><input type="text" placeholder="Observações" onchange="saveFicha();"><button onclick="removeWeapon(this); saveFicha();">Remover</button>';
+            list.appendChild(li);
+        }
+
+        function removeWeapon(el) {
+            el.parentElement.remove();
+        }
+
+        // Inventário e Habilidades (igual armas, mas só Nome + Observações)
         function addItem(type) {
             const list = document.getElementById(type + 'List');
             const li = document.createElement('li');
-            li.innerHTML = 'Novo ' + (type === 'inventory' ? 'Item' : 'Habilidade') + ' <input type="text" placeholder="Descrição" onchange="saveFicha();"><button onclick="removeItem(this); saveFicha();">Remover</button>';
+
+            li.innerHTML = `
+                <input type="text" placeholder="Nome do ${type === 'inventory' ? 'Item' : 'Skill'}" onchange="saveFicha();">
+                <input type="text" placeholder="Observações" onchange="saveFicha();">
+                <button onclick="removeItem(this); saveFicha();">Remover</button>
+            `;
+
             list.appendChild(li);
         }
 
@@ -1170,4 +1263,3 @@
     </script>
 </body>
 </html>
-
