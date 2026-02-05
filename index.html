@@ -594,22 +594,233 @@
             }
             .weapons li input, .weapons li select, .inventory li input, .skills li input {
                 width: 100%;
-            }
-            .ficha-list button {
-                padding: 5px 10px;
-                font-size: 11px;
-            }
-            .logout, .prancheta-btn {
-                padding: 6px 10px;
-                font-size: 12px;
-            }
-            .search-ficha input {
-                max-width: 100%;
-            }
-            .search-ficha button {
-                padding: 8px 12px;
-                font-size: 14px;
-            }
+            }        }
+        /* Estilos para a nova seção de campos do personagem */
+        .character-fields {
+            background: rgba(26, 26, 26, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            border: 1px solid #333;
+            margin-bottom: 30px;
+            width: 100%;
+            max-width: 1400px;
+            margin: 30px auto 0;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .character-fields .field-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+        }
+        .character-fields label {
+            color: #fff;
+            font-weight: bold;
+            min-width: 150px;
+        }
+        .character-fields input {
+            flex: 1;
+            max-width: 300px;
+        }
+        .limiares {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .limiares input {
+            width: 50px;
+        }
+        .experiencias {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+        .experiencia {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .experiencia input[type="text"] {
+            flex: 1;
+        }
+        .experiencia input[type="number"] {
+            width: 80px;
+        }
+        .experiencia .remove-exp {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .add-experiencia {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            align-self: flex-start;
+        }
+        /* Estilos para a prancheta de cartas */
+        .prancheta {
+            background: #0f0f0f;
+            border: 5px solid #ff0000;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 30px auto;
+            width: 100%;
+            max-width: 1400px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .prancheta-block {
+            background: rgba(26, 26, 26, 0.95);
+            border: 2px dashed #ff0000;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .prancheta-title {
+            color: #2196F3;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .prancheta-subtitle {
+            color: #ccc;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        .slots {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+        .slot-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+        .slot {
+            width: 80px;
+            height: 120px;
+            background: #2a2a2a;
+            border: 1px solid #555;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .slot.empty::before {
+            content: "Slot Vazio";
+            color: #ccc;
+            font-size: 12px;
+            text-align: center;
+        }
+        .slot.empty::after {
+            content: "Slot vazio";
+            color: #aaa;
+            font-size: 12px;
+        }
+        .remove-image {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: rgba(255,0,0,.85);
+            color: #fff;
+            border: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        #slotModal {
+            z-index: 100;
+        }
+        .modal-content {
+            background: #1a1a1a;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 80%;
+            max-height: 80%;
+            position: relative;
+            z-index: 101;
+            pointer-events: auto;
+        }
+        .modal-content img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+        .modal img {
+            max-width: 400px;
+        }
+        .token {
+            position: absolute;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #fff;
+        }
+        #tokenCounter {
+            color: #fff;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        button {
+            cursor: pointer;
+        }
+        .close-modal {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .add-token {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
         }
         /* Estilos para a nova tabela de progressão */
         .progression-table {
@@ -805,6 +1016,8 @@
                     <h2><i class="fas fa-user-circle"></i> Imagem do Personagem</h2>
                     <input type="file" accept="image/*" onchange="loadImage(event); saveFicha();">
                     <img id="charImage" src="" alt="Imagem do Personagem" style="display: none;">
+                    <button onclick="removeCharacterImage()">Remover Imagem</button>
+                    <br><br>
                 </div>
             </div>
 
@@ -856,6 +1069,147 @@
             </div>
         </div>
 
+        <!-- Nova Seção: Campos do Personagem -->
+        <div class="character-fields" id="characterFields" style="display: none;">
+            <h2><i class="fas fa-user-edit"></i> Campos do Personagem</h2>
+            <div class="field-row">
+                <label for="spellcast">Spellcast:</label>
+                <input type="text" id="spellcast" onchange="saveFicha();">
+            </div>
+            <div class="field-row">
+                <label>Limiares de Dano:</label>
+                <div class="limiares">
+                    1 <input type="number"id="limiar1" onchange="saveFicha();"> 2 <input type="number" id="limiar2" onchange="saveFicha();"> 3
+                </div>
+            </div>
+            <div class="field-row">
+                <label for="dominioPrimario">Domínio Primário:</label>
+                <input type="text" id="dominioPrimario" onchange="saveFicha();">
+            </div>
+            <div class="field-row">
+                <label for="dominioSecundario">Domínio Secundário:</label>
+                <input type="text" id="dominioSecundario" onchange="saveFicha();">
+            </div>
+            <div class="experiencias" id="experiencias">
+                <label>Experiências:</label>
+                <div class="experiencia">
+                    <input type="text" placeholder="Descrição da Experiência" onchange="saveFicha();">
+                    <input type="number" placeholder="Valor" onchange="saveFicha();">
+                    <button class="remove-exp" onclick="removeExperiencia(this); saveFicha();">Remover</button>
+                </div>
+            </div>
+            <button class="add-experiencia" onclick="addExperiencia(); saveFicha();">Nova Experiência</button>
+        </div>
+
+        <!-- Nova Seção: Prancheta de Cartas -->
+        <div class="prancheta" id="prancheta" style="display: none;">
+            <div class="prancheta-block">
+                <div class="prancheta-title">Ancestralidade</div>
+                <div class="prancheta-subtitle">Slot 1: Raça | Slot 2: Comunidade</div>
+                <div class="slots">
+                    <div class="slot empty" data-slot="ancestralidade-1" onclick="openSlotModal('ancestralidade-1')"></div>
+                    <div class="slot empty" data-slot="ancestralidade-2" onclick="openSlotModal('ancestralidade-2')"></div>
+                </div>
+            </div>
+            <div class="prancheta-block">
+                <div class="prancheta-title">Subclasse</div>
+                <div class="prancheta-subtitle">Slots dinâmicos baseados em Multiclasse</div>
+                <div class="slots">
+                    <div class="slot-row">
+                        <div class="slot empty" data-slot="subclasse-1" onclick="openSlotModal('subclasse-1')"></div>
+                        <div class="slot empty" data-slot="subclasse-2" onclick="openSlotModal('subclasse-2')"></div>
+                    </div>
+                    <div class="slot empty" data-slot="subclasse-3" onclick="openSlotModal('subclasse-3')"></div>
+                </div>
+            </div>
+            <div class="prancheta-block">
+                <div class="prancheta-title">Loadouts</div>
+                <div class="prancheta-subtitle">Cartas com domínios selecionados</div>
+                <div class="slots">
+                    <div class="slot-row">
+                        <div class="slot empty" data-slot="loadouts-1" onclick="openSlotModal('loadouts-1')"></div>
+                        <div class="slot empty" data-slot="loadouts-2" onclick="openSlotModal('loadouts-2')"></div>
+                        <div class="slot empty" data-slot="loadouts-3" onclick="openSlotModal('loadouts-3')"></div>
+                        <div class="slot empty" data-slot="loadouts-4" onclick="openSlotModal('loadouts-4')"></div>
+                    </div>
+                    <div class="slot empty" data-slot="loadouts-5" onclick="openSlotModal('loadouts-5')"></div>
+                </div>
+            </div>
+            <div class="prancheta-block">
+                <div class="prancheta-title">Cofre</div>
+                <div class="prancheta-subtitle">Cartas com domínios selecionados</div>
+                <div class="slots">
+                    <div class="slot-row">
+                        <div class="slot empty" data-slot="cofre-1" onclick="openSlotModal('cofre-1')"></div>
+                        <div class="slot empty" data-slot="cofre-2" onclick="openSlotModal('cofre-2')"></div>
+                        <div class="slot empty" data-slot="cofre-3" onclick="openSlotModal('cofre-3')"></div>
+                        <div class="slot empty" data-slot="cofre-4" onclick="openSlotModal('cofre-4')"></div>
+                    </div>
+                    <div class="slot empty" data-slot="cofre-5" onclick="openSlotModal('cofre-5')"></div>
+                </div>
+            </div>
+        </div>
+
+<!-- Modal para slots -->
+<div class="modal-content" style="position:relative;">
+
+    <!-- Botão fechar -->
+<button class="close-modal"
+        onclick="closeModal()"
+        style="position:absolute; top:10px; right:10px; z-index:1000;">
+    Fechar
+</button>
+
+
+    <!-- Contador de tokens -->
+    <div id="tokenCounter"
+         style="
+            position:absolute;
+            top:10px;
+            left:10px;
+            background:rgba(0,0,0,0.7);
+            padding:6px 10px;
+            border-radius:6px;
+            font-weight:bold;
+         ">
+        Tokens: 0
+    </div>
+
+    <!-- Imagem da carta -->
+    <img id="modalImage"
+         src=""
+         alt="Carta"
+         style="
+            display:block;
+            max-width:100%;
+            margin:40px auto 60px;
+         ">
+
+    <!-- Remover imagem -->
+    <button class="add-token"
+            onclick="removeCurrentImage()"
+            style="
+                position:absolute;
+                bottom:15px;
+                left:15px;
+                background:#ff4d4d;
+            ">
+        Remover Imagem
+    </button>
+
+    <!-- Controles de token -->
+    <div style="
+        position: absolute;
+        bottom:15px;
+        right:15px;
+        display:flex;
+        gap:10px;
+    ">
+        <button class="add-token" onclick="addToken()">+ Token</button>
+    </div>
+
+</div>
+
         <!-- Nova Seção: Tabela de Progressão -->
         <div class="progression-table" id="progressionTable" style="display: none;">
             <h2><i class="fas fa-level-up-alt"></i> Progressão de Níveis</h2>
@@ -867,21 +1221,20 @@
                     <div class="tier-instruction">Escolha duas opções da lista abaixo e as marque.</div>
                     <ul class="tier-options">
                         <li>
-                        <input type="checkbox" onchange="saveFicha();">
-                        <input type="checkbox" onchange="saveFicha();">
-                        <input type="checkbox" onchange="saveFicha();">
-                        Escolha dois atributos desmarcados, os marque e receba um bônus de +1 em cada.
+                            <input type="checkbox" onchange="saveFicha();">
+                            <input type="checkbox" onchange="saveFicha();">
+                            <input type="checkbox" onchange="saveFicha();">
+                            Escolha dois atributos desmarcados, os marque e receba um bônus de +1 em cada.
                         </li>
                         <li>
-                        <input type="checkbox" onchange="saveFicha();">
-                        <input type="checkbox" onchange="saveFicha();">
-                        Aumente seus PV em 1 permanentemente.
+                            <input type="checkbox" onchange="saveFicha();">
+                            <input type="checkbox" onchange="saveFicha();">
+                            Aumente seus PV em 1 permanentemente.
                         </li>
-
                         <li>
-                        <input type="checkbox" onchange="saveFicha();">
-                        <input type="checkbox" onchange="saveFicha();">
-                        Aumente seus PF em 1 permanentemente.
+                            <input type="checkbox" onchange="saveFicha();">
+                            <input type="checkbox" onchange="saveFicha();">
+                            Aumente seus PF em 1 permanentemente.
                         </li>
                         <li><input type="checkbox" onchange="saveFicha();"> Receba +1 em duas Experiências permanentemente.</li>
                         <li><input type="checkbox" onchange="saveFicha();"> Escolha uma nova carta de domínio de um domínio ao qual você tem acesso e de um nível igual ou menor que o seu (nível máx.: 4).</li>
@@ -897,21 +1250,20 @@
                     <div class="tier-instruction">Escolha duas opções da lista abaixo, ou qualquer opção do patamar anterior, e as marque.</div>
                     <ul class="tier-options">
                         <li>
-                        <input type="checkbox" onchange="saveFicha();">
-                        <input type="checkbox" onchange="saveFicha();">
-                        <input type="checkbox" onchange="saveFicha();">
-                        Escolha dois atributos desmarcados, os marque e receba um bônus de +1 em cada.
+                            <input type="checkbox" onchange="saveFicha();">
+                            <input type="checkbox" onchange="saveFicha();">
+                            <input type="checkbox" onchange="saveFicha();">
+                            Escolha dois atributos desmarcados, os marque e receba um bônus de +1 em cada.
                         </li>
                         <li>
-                        <input type="checkbox" onchange="saveFicha();">
-                        <input type="checkbox" onchange="saveFicha();">
-                        Aumente seus PV em 1 permanentemente.
+                            <input type="checkbox" onchange="saveFicha();">
+                            <input type="checkbox" onchange="saveFicha();">
+                            Aumente seus PV em 1 permanentemente.
                         </li>
-
                         <li>
-                        <input type="checkbox" onchange="saveFicha();">
-                        <input type="checkbox" onchange="saveFicha();">
-                        Aumente seus PF em 1 permanentemente.
+                            <input type="checkbox" onchange="saveFicha();">
+                            <input type="checkbox" onchange="saveFicha();">
+                            Aumente seus PF em 1 permanentemente.
                         </li>
                         <li><input type="checkbox" onchange="saveFicha();"> Receba +1 em duas Experiências permanentemente.</li>
                         <li><input type="checkbox" onchange="saveFicha();"> Escolha uma nova carta de domínio de um domínio ao qual você tem acesso e de um nível igual ou menor que o seu (nível máx.: 7).</li>
@@ -938,21 +1290,20 @@
                     <div class="tier-instruction">Escolha duas opções da lista abaixo, ou qualquer opção do patamar anterior, e as marque.</div>
                     <ul class="tier-options">
                         <li>
-                        <input type="checkbox" onchange="saveFicha();">
-                        <input type="checkbox" onchange="saveFicha();">
-                        <input type="checkbox" onchange="saveFicha();">
-                        Escolha dois atributos desmarcados, os marque e receba um bônus de +1 em cada.
+                            <input type="checkbox" onchange="saveFicha();">
+                            <input type="checkbox" onchange="saveFicha();">
+                            <input type="checkbox" onchange="saveFicha();">
+                            Escolha dois atributos desmarcados, os marque e receba um bônus de +1 em cada.
                         </li>
                         <li>
-                        <input type="checkbox" onchange="saveFicha();">
-                        <input type="checkbox" onchange="saveFicha();">
-                        Aumente seus PV em 1 permanentemente.
+                            <input type="checkbox" onchange="saveFicha();">
+                            <input type="checkbox" onchange="saveFicha();">
+                            Aumente seus PV em 1 permanentemente.
                         </li>
-
                         <li>
-                        <input type="checkbox" onchange="saveFicha();">
-                        <input type="checkbox" onchange="saveFicha();">
-                        Aumente seus PF em 1 permanentemente.
+                            <input type="checkbox" onchange="saveFicha();">
+                            <input type="checkbox" onchange="saveFicha();">
+                            Aumente seus PF em 1 permanentemente.
                         </li>
                         <li><input type="checkbox" onchange="saveFicha();"> Receba +1 em duas Experiências permanentemente.</li>
                         <li><input type="checkbox" onchange="saveFicha();"> Escolha uma nova carta de domínio de um domínio ao qual você tem acesso e de um nível igual ou menor que o seu.</li>
@@ -1125,9 +1476,8 @@
                 document.getElementById('searchError').style.display = 'none';
             } else {
                 document.getElementById('searchError').style.display = 'block';
-            }
         }
-
+    }
         async function loadFichas() {
             const sheets = await loadSheets();
             const userSheets = sheets.filter(s => s.user_id === currentUser.id);
@@ -1158,6 +1508,23 @@
                 inventory: ['Item 1'],
                 skills: ['Habilidade 1'],
                 image: '',
+                spellcast: '',
+                limiares: [0, 0, 0],
+                experiencias: [{ desc: '', val: 0 }],
+                dominioPrimario: '',
+                dominioSecundario: '',
+                prancheta: {
+                    ancestralidade: ['', ''],
+                    subclasse: ['', '', ''],
+                    loadouts: ['', '', '', '', ''],
+                    cofre: ['', '', '', '', '']
+                },
+                tokens: {
+                    ancestralidade: [[], []],
+                    subclasse: [[], [], []],
+                    loadouts: [[], [], [], [], []],
+                    cofre: [[], [], [], [], []]
+                },
                 activeIcons: {
                     pv: Array(5).fill(false),
                     pf: Array(5).fill(false),
@@ -1272,6 +1639,42 @@
                 skillsList.appendChild(li);
             });
 
+            // CAMPOS DO PERSONAGEM
+            document.getElementById('spellcast').value = data.spellcast || '';
+            document.getElementById('limiar1').value = data.limiares[0] || 0;
+            document.getElementById('limiar2').value = data.limiares[1] || 0;
+            document.getElementById('dominioPrimario').value = data.dominioPrimario || '';
+            document.getElementById('dominioSecundario').value = data.dominioSecundario || '';
+            const experienciasDiv = document.getElementById('experiencias');
+            experienciasDiv.innerHTML = '<label>Experiências:</label>';
+            data.experiencias.forEach(exp => {
+                const expDiv = document.createElement('div');
+                expDiv.className = 'experiencia';
+                expDiv.innerHTML = `<input type="text" placeholder="Descrição da Experiência" value="${exp.desc}" onchange="saveFicha();">
+                                    <input type="number" placeholder="Valor" value="${exp.val}" onchange="saveFicha();">
+                                    <button class="remove-exp" onclick="removeExperiencia(this); saveFicha();">Remover</button>`;
+                experienciasDiv.appendChild(expDiv);
+            });
+
+            // PRANCHETA
+            if (data.prancheta) {
+                Object.keys(data.prancheta).forEach(section => {
+                    data.prancheta[section].forEach((img, i) => {
+                        const slot = document.querySelector(`[data-slot="${section}-${i + 1}"]`);
+                        if (img) {
+                            slot.innerHTML = `<img src="${img}" alt="Carta">`;
+                            slot.classList.remove('empty');
+                        } else {
+                            slot.innerHTML = '';
+                            slot.classList.add('empty');
+                        }
+                    });
+                });
+            }
+            if (data.tokens) {
+                currentTokens = data.tokens;
+            }
+
             // PROGRESSÃO
             if (data.progression) {
                 const tier2Checkboxes = document.querySelectorAll('.tier-column:nth-child(1) .tier-options input[type="checkbox"]');
@@ -1291,6 +1694,8 @@
                 document.getElementById('charImage').style.display = 'none';
             }
             document.getElementById('fichaContainer').style.display = 'grid';
+            document.getElementById('characterFields').style.display = 'block';
+            document.getElementById('prancheta').style.display = 'grid';
             document.getElementById('progressionTable').style.display = 'block';
             document.getElementById('pranchetaBtn').style.display = 'block';
         }
@@ -1304,6 +1709,8 @@
             loadFichas();
             if (currentFichaId === id) {
                 document.getElementById('fichaContainer').style.display = 'none';
+                document.getElementById('characterFields').style.display = 'none';
+                document.getElementById('prancheta').style.display = 'none';
                 document.getElementById('progressionTable').style.display = 'none';
                 document.getElementById('pranchetaBtn').style.display = 'none';
                 currentFichaId = null;
@@ -1346,6 +1753,43 @@
                     const notes = inputs[1].value.trim();
                     return notes ? `${name} - ${notes}` : name;
                 }),
+                spellcast: document.getElementById('spellcast').value,
+                limiares: [
+                    parseInt(document.getElementById('limiar1').value) || 0,
+                    parseInt(document.getElementById('limiar2').value) || 0,
+                                ],
+                experiencias: Array.from(document.querySelectorAll('.experiencia')).map(exp => {
+                    const inputs = exp.querySelectorAll('input');
+                    return { desc: inputs[0].value, val: parseInt(inputs[1].value) || 0 };
+                }),
+                dominioPrimario: document.getElementById('dominioPrimario').value,
+                dominioSecundario: document.getElementById('dominioSecundario').value,
+                prancheta: {
+                    ancestralidade: [
+                        document.querySelector('[data-slot="ancestralidade-1"] img')?.src || '',
+                        document.querySelector('[data-slot="ancestralidade-2"] img')?.src || ''
+                    ],
+                    subclasse: [
+                        document.querySelector('[data-slot="subclasse-1"] img')?.src || '',
+                        document.querySelector('[data-slot="subclasse-2"] img')?.src || '',
+                        document.querySelector('[data-slot="subclasse-3"] img')?.src || ''
+                    ],
+                    loadouts: [
+                        document.querySelector('[data-slot="loadouts-1"] img')?.src || '',
+                        document.querySelector('[data-slot="loadouts-2"] img')?.src || '',
+                        document.querySelector('[data-slot="loadouts-3"] img')?.src || '',
+                        document.querySelector('[data-slot="loadouts-4"] img')?.src || '',
+                        document.querySelector('[data-slot="loadouts-5"] img')?.src || ''
+                    ],
+                    cofre: [
+                        document.querySelector('[data-slot="cofre-1"] img')?.src || '',
+                        document.querySelector('[data-slot="cofre-2"] img')?.src || '',
+                        document.querySelector('[data-slot="cofre-3"] img')?.src || '',
+                        document.querySelector('[data-slot="cofre-4"] img')?.src || '',
+                        document.querySelector('[data-slot="cofre-5"] img')?.src || ''
+                    ]
+                },
+                tokens: currentTokens,
                 image: document.getElementById('charImage').src,
                 activeIcons: {
                     pv: Array.from(document.querySelectorAll('#pv .icon')).map(icon => icon.classList.contains('active')),
@@ -1461,6 +1905,21 @@
                 reader.readAsDataURL(file);
             }
         }
+        function removeCharacterImage() {
+            const img = document.getElementById("charImage");
+            img.src = "";
+            img.style.display = "none";
+            saveFicha();
+        }
+
+        function removeSlotImage(event, slotId) {
+            event.stopPropagation();
+            const slot = document.querySelector(`[data-slot="${slotId}"]`);
+            slot.innerHTML = "";
+            slot.classList.add("empty");
+            saveFicha();
+        }
+
 
         // Armas
         function addWeapon() {
@@ -1490,6 +1949,190 @@
 
         function removeItem(el) {
             el.parentElement.remove();
+        }
+
+        // Experiências
+        function addExperiencia() {
+            const experiencias = document.getElementById('experiencias');
+            const expDiv = document.createElement('div');
+            expDiv.className = 'experiencia';
+            expDiv.innerHTML = '<input type="text" placeholder="Descrição da Experiência" onchange="saveFicha();"><input type="number" placeholder="Valor" onchange="saveFicha();"><button class="remove-exp" onclick="removeExperiencia(this); saveFicha();">Remover</button>';
+            experiencias.appendChild(expDiv);
+        }
+
+        function removeExperiencia(el) {
+            el.parentElement.remove();
+        }
+
+        // Prancheta
+        let currentSlot = null;
+        let currentTokens = {
+            ancestralidade: [[], []],
+            subclasse: [[], [], []],
+            loadouts: [[], [], [], [], []],
+            cofre: [[], [], [], [], []]
+        };
+
+function openSlotModal(slotId) {
+    currentSlot = slotId;
+
+    const slot = document.querySelector(`[data-slot="${slotId}"]`);
+    const img = slot.querySelector("img");
+
+    const [section, index] = slotId.split("-");
+    const slotIndex = parseInt(index) - 1;
+
+    // Se não tiver imagem, abre seletor
+    if (!img) {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "image/*";
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                slot.innerHTML = `<img src="${ev.target.result}" alt="Carta">`;
+                slot.classList.remove("empty");
+
+                // Inicializa tokens do slot
+                if (!currentTokens[section][slotIndex]) {
+                    currentTokens[section][slotIndex] = [];
+                }
+
+                saveFicha();
+            };
+            reader.readAsDataURL(file);
+        };
+        input.click();
+        return;
+    }
+
+    // Se tem imagem → abre modal
+    document.getElementById("modalImage").src = img.src;
+    document.getElementById("slotModal").style.display = "flex";
+
+    // Limpa tokens visuais antigos do modal
+    document.querySelectorAll(".modal-content .token").forEach(t => t.remove());
+
+    // Renderiza tokens do slot atual
+    const tokens = currentTokens[section][slotIndex] || [];
+    tokens.forEach(token => {
+        const tokenEl = document.createElement("div");
+        tokenEl.className = "token";
+        tokenEl.style.left = token.x + "px";
+        tokenEl.style.top = token.y + "px";
+        tokenEl.style.backgroundColor = token.color;
+
+        document.querySelector(".modal-content").appendChild(tokenEl);
+    });
+
+    updateTokenCounter(section, slotIndex);
+}
+
+        function closeModal() {
+            document.getElementById("slotModal").style.display = "none";
+
+            // Remove tokens visuais do modal
+            document.querySelectorAll(".modal-content .token").forEach(t => t.remove());
+
+            // Reseta slot atual
+            currentSlot = null;
+        }
+
+        function addToken() {
+            if (!currentSlot) return;
+
+            const [section, index] = currentSlot.split("-");
+            const slotIndex = parseInt(index) - 1;
+
+            // Garante estrutura
+            if (!currentTokens[section][slotIndex]) {
+                currentTokens[section][slotIndex] = [];
+            }
+
+            function removeToken() {
+                if (!currentSlot) return;
+
+                const [section, index] = currentSlot.split("-");
+                const slotIndex = parseInt(index) - 1;
+
+                if (
+                    currentTokens[section] &&
+                    currentTokens[section][slotIndex] &&
+                    currentTokens[section][slotIndex].length > 0
+                ) {
+                    currentTokens[section][slotIndex].pop();
+                    updateTokenCounter(section, slotIndex);
+                    saveFicha();
+                }
+            }
+
+            // Cria dados do token
+            const tokenData = {
+                x: 50,
+                y: 50,
+                color: "red"
+            };
+
+            currentTokens[section][slotIndex].push(tokenData);
+
+            // Cria token visual
+            const modal = document.querySelector(".modal-content");
+            const token = document.createElement("div");
+            token.className = "token";
+            token.style.left = tokenData.x + "%";
+            token.style.top = tokenData.y + "%";
+            token.style.backgroundColor = tokenData.color;
+
+            token.onclick = () => {
+                const indexToRemove = currentTokens[section][slotIndex].indexOf(tokenData);
+                if (indexToRemove > -1) {
+                    currentTokens[section][slotIndex].splice(indexToRemove, 1);
+                }
+                token.remove();
+                updateTokenCounter(section, slotIndex);
+                saveFicha();
+            };
+
+            modal.appendChild(token);
+
+            updateTokenCounter(section, slotIndex);
+            saveFicha();
+        }
+
+        function updateTokenCounter(section, index) {
+            const count = currentTokens?.[section]?.[index]?.length || 0;
+            document.getElementById("tokenCounter").innerText = `Tokens: ${count}`;
+        }
+
+        function removeCurrentImage() {
+            if (!currentSlot) return;
+
+            const [section, index] = currentSlot.split("-");
+            const slotIndex = parseInt(index) - 1;
+
+            const slot = document.querySelector(`[data-slot="${currentSlot}"]`);
+            slot.innerHTML = "";
+            slot.classList.add("empty");
+
+            // Limpa tokens da imagem
+            currentTokens[section][slotIndex] = [];
+
+            closeModal();
+            saveFicha();
+        }
+
+        function updateTokens() {
+            const [section, index] = currentSlot.split('-');
+            const tokens = Array.from(document.querySelectorAll('.token')).map(t => ({
+                x: parseInt(t.style.left),
+                y: parseInt(t.style.top),
+                color: t.style.backgroundColor
+            }));
+            currentTokens[section][parseInt(index) - 1] = tokens;
+            saveFicha();
         }
     </script>
 </body>
